@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+
+#      - name: Build
+#        uses: gradle/gradle-build-action@v2
+#        with:
+#          arguments: build -i
+
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+        id: setup-gradle
+        with:
+          gradle-version: 8.3
+
+      - name: Build
+        run: gradle build -i
+
+      - name: Unit Tests
+        run: gradle runUnitTests -i
+
+      - name: Integration Tests
+        run: gradle runIntegrationTests -i
