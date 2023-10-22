@@ -53,9 +53,13 @@ tasks.register<Test>("runIntegrationTests") {
 }
 
 tasks.jacocoTestReport {
-	dependsOn(tasks.named("runUnitTests"), tasks.named("runIntegrationTests")) // tests are required to run before generating the report
+
+	reports {
+		xml.required = false
+		csv.required = true
+	}
 }
 
 jacoco {
-	reportsDirectory = file("${layout.buildDirectory}/reports/jacoco")
+	toolVersion = "0.8.9"
 }
