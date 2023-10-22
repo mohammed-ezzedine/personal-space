@@ -20,11 +20,6 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-#      - name: Build
-#        uses: gradle/gradle-build-action@v2
-#        with:
-#          arguments: build -i
-
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
         id: setup-gradle
@@ -39,3 +34,12 @@ jobs:
 
       - name: Integration Tests
         run: gradle runIntegrationTests -i
+
+      - name: Generate Code Coverage
+        run: gradle jacocoTestReport -i
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: jacoco-reports
+          path: build/reports/jacoco

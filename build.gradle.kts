@@ -1,5 +1,6 @@
 plugins {
 	java
+	jacoco
 	id("org.springframework.boot") version "3.1.5"
 	id("io.spring.dependency-management") version "1.1.3"
 }
@@ -33,6 +34,8 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+
+	finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.register<Test>("runUnitTests") {
@@ -47,4 +50,12 @@ tasks.register<Test>("runIntegrationTests") {
 		includeTestsMatching("*IntegrationTest")
 		isFailOnNoMatchingTests = false
 	}
+}
+
+tasks.jacocoTestReport {
+	dependsOn(tasks.named("runUnitTests"), tasks.named("runIntegrationTests")) // tests are required to run before generating the report
+}
+
+jacoco {
+	reportsDirectory = file("${layout.buildDirectory}/reports/jacoco")
 }
