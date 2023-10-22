@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -96,14 +97,23 @@ class ArticleCategoryServiceTest {
         @Test
         @DisplayName("it should fail if the id does not exist")
         void it_should_fail_if_the_id_does_not_exist() {
-            when(storage.categoryExists(ID)).thenReturn(false);
+            when(storage.fetch(ID)).thenReturn(Optional.empty());
             assertThrows(ArticleCategoryNotFoundException.class, () -> service.delete(ID));
         }
 
         @Test
+        @DisplayName("it should fail if the category is marked not to be deleted")
+        void it_should_fail_if_the_category_is_marked_not_to_be_deleted() {
+            ArticleCategory articleCategory = ArticleCategory.builder().id(ID).name(NAME).canBeDeleted(false).build();
+            when(storage.fetch(ID)).thenReturn(Optional.of(articleCategory));
+            assertThrows(CannotDeleteArticleCategoryException.class, () -> service.delete(ID));
+        }
+
+        @Test
         @DisplayName("it should delete the category from the store when found")
-        void it_should_delete_the_category_from_the_store_when_found() throws ArticleCategoryNotFoundException {
-            when(storage.categoryExists(ID)).thenReturn(true);
+        void it_should_delete_the_category_from_the_store_when_found() throws ArticleCategoryNotFoundException, CannotDeleteArticleCategoryException {
+            ArticleCategory articleCategory = ArticleCategory.builder().id(ID).name(NAME).canBeDeleted(true).build();
+            when(storage.fetch(ID)).thenReturn(Optional.of(articleCategory));
             service.delete(ID);
             verify(storage).delete(ID);
         }

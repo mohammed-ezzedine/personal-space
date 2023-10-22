@@ -6,6 +6,7 @@ import me.ezzedine.mohammed.personalspace.category.core.ArticleCategoryStorage;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -16,6 +17,11 @@ public class ArticleCategoryStorageManager implements ArticleCategoryStorage {
     @Override
     public boolean categoryExists(String id) {
         return repository.existsById(id);
+    }
+
+    @Override
+    public Optional<ArticleCategory> fetch(String id) {
+        return repository.findById(id).map(ArticleCategoryStorageManager::fromEntity);
     }
 
     @Override

@@ -15,6 +15,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -79,6 +80,30 @@ class ArticleCategoryStorageManagerIntegrationTest extends DatabaseIntegrationTe
             assertEquals(id, articleCategories.get(0).getId());
             assertEquals(NAME, articleCategories.get(0).getName());
             assertEquals(CAN_BE_DELETED, articleCategories.get(0).canBeDeleted());
+        }
+    }
+
+    @Nested
+    @DisplayName("When fetching an article category given its id")
+    class FetchingArticleCategoryByIdIntegrationTest {
+        @Test
+        @DisplayName("it should return an empty optional if the category does not exist")
+        void it_should_return_an_empty_optional_if_the_category_does_not_exist() {
+            Optional<ArticleCategory> optionalCategory = storageManager.fetch(UUID.randomUUID().toString());
+            assertTrue(optionalCategory.isEmpty());
+        }
+
+        @Test
+        @DisplayName("it should return the category when it is found")
+        void it_should_return_the_category_when_it_is_found() {
+            String id = UUID.randomUUID().toString();
+            repository.save(getEntity(id));
+
+            Optional<ArticleCategory> optionalCategory = storageManager.fetch(id);
+            assertTrue(optionalCategory.isPresent());
+            assertEquals(id, optionalCategory.get().getId());
+            assertEquals(NAME, optionalCategory.get().getName());
+            assertEquals(CAN_BE_DELETED, optionalCategory.get().canBeDeleted());
         }
     }
 
