@@ -1,0 +1,7 @@
+[
+  {
+    "id": "articleCategoryId",
+    "name": "articleCategoryName",
+    "canBeDeleted": true
+  }
+]
