@@ -30,6 +30,11 @@ public class CategoryStorageManager implements CategoryStorage {
     }
 
     @Override
+    public Optional<Category> fetchCategoryWithHighestOrder() {
+        return repository.findFirstByOrderByOrderDesc().map(CategoryStorageManager::fromEntity);
+    }
+
+    @Override
     public void persist(Category category) {
         repository.save(toEntity(category));
     }
@@ -44,6 +49,7 @@ public class CategoryStorageManager implements CategoryStorage {
                 .id(category.getId())
                 .name(category.getName())
                 .canBeDeleted(category.canBeDeleted())
+                .order(category.getOrder())
                 .build();
     }
 
@@ -52,6 +58,7 @@ public class CategoryStorageManager implements CategoryStorage {
                 .id(entity.getId())
                 .name(entity.getName())
                 .canBeDeleted(entity.canBeDeleted())
+                .order(entity.getOrder())
                 .build();
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class CategoryEntity {
     private String id;
     private String name;
+    private int order;
     @Accessors(fluent = true)
     private boolean canBeDeleted;
 }

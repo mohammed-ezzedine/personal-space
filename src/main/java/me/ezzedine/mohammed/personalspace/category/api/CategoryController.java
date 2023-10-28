@@ -28,11 +28,12 @@ public class CategoryController implements CategoryApi {
     public ResponseEntity<CategoryCreationResultApiModel> create(CategoryCreationRequest request) throws CategoryValidationViolationException, CategoryIdAlreadyExistsException {
         log.info("Received a request to create a new category {}", request);
         CategoryCreationResult creationResult = persister.persist(PersistCategoryRequest.builder().name(request.getName()).build());
-        return ResponseEntity.status(HttpStatus.CREATED).body(CategoryCreationResultApiModel.builder().id(creationResult.getId()).build());
+        CategoryCreationResultApiModel result = CategoryCreationResultApiModel.builder().id(creationResult.getId()).order(creationResult.getOrder()).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     private static CategorySummaryApiModel toApiModel(Category category) {
-        return CategorySummaryApiModel.builder().id(category.getId()).name(category.getName())
+        return CategorySummaryApiModel.builder().id(category.getId()).name(category.getName()).order(category.getOrder())
                 .canBeDeleted(category.canBeDeleted()).build();
     }
 }

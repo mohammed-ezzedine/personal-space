@@ -50,7 +50,7 @@ class CategoryControllerIntegrationTest {
 
         @BeforeEach
         void setUp() {
-            Category category = Category.builder().id("articleCategoryId").name("articleCategoryName").canBeDeleted(true).build();
+            Category category = Category.builder().id("articleCategoryId").name("articleCategoryName").canBeDeleted(true).order(7).build();
             when(fetcher.fetchAll()).thenReturn(List.of(category));
         }
 
@@ -76,7 +76,7 @@ class CategoryControllerIntegrationTest {
 
         @BeforeEach
         void setUp() throws CategoryValidationViolationException, CategoryIdAlreadyExistsException {
-            when(persister.persist(any())).thenReturn(CategoryCreationResult.builder().id("categoryId").build());
+            when(persister.persist(any())).thenReturn(CategoryCreationResult.builder().id("categoryId").order(4).build());
         }
 
         @Test
@@ -89,8 +89,8 @@ class CategoryControllerIntegrationTest {
         }
 
         @Test
-        @DisplayName("it should return the created category id in the response")
-        void it_should_return_the_created_category_id_in_the_response() throws Exception {
+        @DisplayName("it should return the created category id and order in the response")
+        void it_should_return_the_created_category_id_and_order_in_the_response() throws Exception {
             String response = mockMvc
                     .perform(post("/api/categories")
                             .content(loadResource("category/api/create_category_request.json"))

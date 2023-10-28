@@ -13,6 +13,7 @@ public class CategoryService implements CategoryFetcher, CategoryPersister {
     private final CategoryStorage storage;
     private final CategoryNameValidator nameValidator;
     private final CategoryIdGenerator idGenerator;
+    private final CategoryOrderResolver orderResolver;
 
     @Override
     public List<Category> fetchAll() {
@@ -26,9 +27,11 @@ public class CategoryService implements CategoryFetcher, CategoryPersister {
         String categoryId = idGenerator.generate(request.getName());
         validateIdIsNotTaken(request, categoryId);
 
-        storage.persist(Category.builder().id(categoryId).name(request.getName()).canBeDeleted(true).build());
+        int order = orderResolver.resolveOrderForNewCategory();
 
-        return CategoryCreationResult.builder().id(categoryId).build();
+        storage.persist(Category.builder().id(categoryId).name(request.getName()).canBeDeleted(true).order(order).build());
+
+        return CategoryCreationResult.builder().id(categoryId).order(order).build();
     }
 
     @Override

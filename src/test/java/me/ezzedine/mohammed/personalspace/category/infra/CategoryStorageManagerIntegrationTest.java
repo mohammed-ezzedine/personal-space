@@ -12,10 +12,7 @@ import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataM
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,6 +27,7 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
 
     public static final String NAME = UUID.randomUUID().toString();
     public static final boolean CAN_BE_DELETED = true;
+    public static final int ORDER = new Random().nextInt();
     @Autowired
     private CategoryRepository repository;
     private CategoryStorageManager storageManager;
@@ -79,6 +77,7 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(id, articleCategories.get(0).getId());
             assertEquals(NAME, articleCategories.get(0).getName());
             assertEquals(CAN_BE_DELETED, articleCategories.get(0).canBeDeleted());
+            assertEquals(ORDER, articleCategories.get(0).getOrder());
         }
     }
 
@@ -103,6 +102,39 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(id, optionalCategory.get().getId());
             assertEquals(NAME, optionalCategory.get().getName());
             assertEquals(CAN_BE_DELETED, optionalCategory.get().canBeDeleted());
+            assertEquals(ORDER, optionalCategory.get().getOrder());
+        }
+    }
+
+    @Nested
+    @DisplayName("When fetching the category with the highest order")
+    class FetchingCategoryWithHighestOrderIntegrationTest {
+
+        @Test
+        @DisplayName("should return an empty result if no categories exist in the storage")
+        void should_return_an_empty_result_if_no_categories_exist_in_the_storage() {
+            Optional<Category> category = storageManager.fetchCategoryWithHighestOrder();
+            assertTrue(category.isEmpty());
+        }
+
+        @Test
+        @DisplayName("should return the only category existing in the storage when it is the case")
+        void should_return_the_only_category_existing_in_the_storage_when_it_is_the_case() {
+            repository.save(getEntityWithOrder(1));
+            Optional<Category> category = storageManager.fetchCategoryWithHighestOrder();
+            assertTrue(category.isPresent());
+            assertEquals(1, category.get().getOrder());
+        }
+
+        @Test
+        @DisplayName("should return the correct category when more than one exist in the storage")
+        void should_return_the_correct_category_when_more_than_one_exist_in_the_storage() {
+            repository.save(getEntityWithOrder(1));
+            repository.save(getEntityWithOrder(2));
+            Optional<Category> category = storageManager.fetchCategoryWithHighestOrder();
+            assertTrue(category.isPresent());
+            assertEquals(2, category.get().getOrder());
+
         }
     }
 
@@ -120,6 +152,7 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(id, allCategories.get(0).getId());
             assertEquals(NAME, allCategories.get(0).getName());
             assertEquals(CAN_BE_DELETED, allCategories.get(0).canBeDeleted());
+            assertEquals(ORDER, allCategories.get(0).getOrder());
         }
 
         @Test
@@ -161,6 +194,7 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
                 .id(id)
                 .name(NAME)
                 .canBeDeleted(CAN_BE_DELETED)
+                .order(ORDER)
                 .build();
     }
 
@@ -169,6 +203,16 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
                 .id(id)
                 .name(NAME)
                 .canBeDeleted(CAN_BE_DELETED)
+                .order(ORDER)
+                .build();
+    }
+
+    private static CategoryEntity getEntityWithOrder(int order) {
+        return CategoryEntity.builder()
+                .id(UUID.randomUUID().toString())
+                .name(NAME)
+                .canBeDeleted(CAN_BE_DELETED)
+                .order(order)
                 .build();
     }
 }

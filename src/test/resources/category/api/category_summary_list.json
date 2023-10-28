@@ -2,6 +2,7 @@
   {
     "id": "articleCategoryId",
     "name": "articleCategoryName",
+    "order": 7,
     "canBeDeleted": true
   }
 ]

@@ -4,9 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,19 +16,22 @@ import static org.mockito.Mockito.*;
 
 class CategoryServiceTest {
 
-    public static final String ID = UUID.randomUUID().toString();
-    public static final String NAME = UUID.randomUUID().toString();
+    private static final String ID = UUID.randomUUID().toString();
+    private static final String NAME = UUID.randomUUID().toString();
+    private static final int ORDER = new Random().nextInt();
     private CategoryStorage storage;
     private CategoryService service;
     private CategoryNameValidator nameValidator;
     private CategoryIdGenerator idGenerator;
+    private CategoryOrderResolver orderResolver;
 
     @BeforeEach
     void setUp() {
         storage = mock(CategoryStorage.class);
         nameValidator = mock(CategoryNameValidator.class);
         idGenerator = mock(CategoryIdGenerator.class);
-        service = new CategoryService(storage, nameValidator, idGenerator);
+        orderResolver = mock(CategoryOrderResolver.class);
+        service = new CategoryService(storage, nameValidator, idGenerator, orderResolver);
     }
 
     @Nested
@@ -52,6 +57,7 @@ class CategoryServiceTest {
         void setup() {
             when(nameValidator.validate(NAME)).thenReturn(CategoryNameValidationResult.builder().valid(true).build());
             when(idGenerator.generate(NAME)).thenReturn(ID);
+            when(orderResolver.resolveOrderForNewCategory()).thenReturn(ORDER);
         }
 
         @Test
@@ -79,7 +85,22 @@ class CategoryServiceTest {
         @DisplayName("should persist the new category with the option to be deleted in the future")
         void should_persist_the_new_category_with_the_option_to_be_deleted_in_the_future() throws CategoryValidationViolationException, CategoryIdAlreadyExistsException {
             service.persist(PersistCategoryRequest.builder().name(NAME).build());
-            verify(storage).persist(Category.builder().id(ID).name(NAME).canBeDeleted(true).build());
+
+            ArgumentCaptor<Category> argumentCaptor = ArgumentCaptor.forClass(Category.class);
+            verify(storage).persist(argumentCaptor.capture());
+
+            assertTrue(argumentCaptor.getValue().canBeDeleted());
+        }
+
+        @Test
+        @DisplayName("it should persist the new category with the resolved order")
+        void it_should_persist_the_new_category_with_the_resolved_order() throws CategoryIdAlreadyExistsException, CategoryValidationViolationException {
+            service.persist(PersistCategoryRequest.builder().name(NAME).build());
+
+            ArgumentCaptor<Category> argumentCaptor = ArgumentCaptor.forClass(Category.class);
+            verify(storage).persist(argumentCaptor.capture());
+
+            assertEquals(ORDER, argumentCaptor.getValue().getOrder());
         }
 
         @Test
@@ -87,6 +108,13 @@ class CategoryServiceTest {
         void should_return_the_newly_generated_category_id() throws CategoryValidationViolationException, CategoryIdAlreadyExistsException {
             CategoryCreationResult creationResult = service.persist(PersistCategoryRequest.builder().name(NAME).build());
             assertEquals(ID, creationResult.getId());
+        }
+
+        @Test
+        @DisplayName("should return the newly generated category order")
+        void should_return_the_newly_generated_category_order() throws CategoryIdAlreadyExistsException, CategoryValidationViolationException {
+            CategoryCreationResult creationResult = service.persist(PersistCategoryRequest.builder().name(NAME).build());
+            assertEquals(ORDER, creationResult.getOrder());
         }
     }
 

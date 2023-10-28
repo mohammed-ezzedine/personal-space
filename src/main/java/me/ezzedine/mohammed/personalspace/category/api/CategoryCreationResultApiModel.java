@@ -7,4 +7,5 @@ import lombok.Data;
 @Builder
 public class CategoryCreationResultApiModel {
     private String id;
+    private int order;
 }
