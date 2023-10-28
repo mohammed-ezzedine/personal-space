@@ -3,7 +3,7 @@ package me.ezzedine.mohammed.personalspace.category.core;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ArticleCategorySpaceToHyphenIdGenerator implements ArticleCategoryIdGenerator {
+public class CategorySpaceToHyphenIdGenerator implements CategoryIdGenerator {
 
     @Override
     public String generate(String name) {

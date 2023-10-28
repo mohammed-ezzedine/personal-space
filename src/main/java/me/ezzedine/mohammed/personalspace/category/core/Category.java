@@ -6,7 +6,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Builder
-public class ArticleCategory {
+public class Category {
     private String id;
     private String name;
     @Accessors(fluent = true)

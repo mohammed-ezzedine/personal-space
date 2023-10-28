@@ -6,7 +6,7 @@ import lombok.NonNull;
 
 @Data
 @Builder
-public class PersistArticleCategoryRequest {
+public class PersistCategoryRequest {
     @NonNull
     private String name;
 }

@@ -1,8 +1,8 @@
 package me.ezzedine.mohammed.personalspace.category.infra;
 
 import lombok.RequiredArgsConstructor;
-import me.ezzedine.mohammed.personalspace.category.core.ArticleCategory;
-import me.ezzedine.mohammed.personalspace.category.core.ArticleCategoryStorage;
+import me.ezzedine.mohammed.personalspace.category.core.Category;
+import me.ezzedine.mohammed.personalspace.category.core.CategoryStorage;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,9 +10,9 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class ArticleCategoryStorageManager implements ArticleCategoryStorage {
+public class CategoryStorageManager implements CategoryStorage {
 
-    private final ArticleCategoryRepository repository;
+    private final CategoryRepository repository;
 
     @Override
     public boolean categoryExists(String id) {
@@ -20,17 +20,17 @@ public class ArticleCategoryStorageManager implements ArticleCategoryStorage {
     }
 
     @Override
-    public Optional<ArticleCategory> fetch(String id) {
-        return repository.findById(id).map(ArticleCategoryStorageManager::fromEntity);
+    public Optional<Category> fetch(String id) {
+        return repository.findById(id).map(CategoryStorageManager::fromEntity);
     }
 
     @Override
-    public List<ArticleCategory> fetchAll() {
-        return repository.findAll().stream().map(ArticleCategoryStorageManager::fromEntity).toList();
+    public List<Category> fetchAll() {
+        return repository.findAll().stream().map(CategoryStorageManager::fromEntity).toList();
     }
 
     @Override
-    public void persist(ArticleCategory category) {
+    public void persist(Category category) {
         repository.save(toEntity(category));
     }
 
@@ -39,16 +39,16 @@ public class ArticleCategoryStorageManager implements ArticleCategoryStorage {
         repository.deleteById(id);
     }
 
-    private static ArticleCategoryEntity toEntity(ArticleCategory category) {
-        return ArticleCategoryEntity.builder()
+    private static CategoryEntity toEntity(Category category) {
+        return CategoryEntity.builder()
                 .id(category.getId())
                 .name(category.getName())
                 .canBeDeleted(category.canBeDeleted())
                 .build();
     }
 
-    private static ArticleCategory fromEntity(ArticleCategoryEntity entity) {
-        return ArticleCategory.builder()
+    private static Category fromEntity(CategoryEntity entity) {
+        return Category.builder()
                 .id(entity.getId())
                 .name(entity.getName())
                 .canBeDeleted(entity.canBeDeleted())

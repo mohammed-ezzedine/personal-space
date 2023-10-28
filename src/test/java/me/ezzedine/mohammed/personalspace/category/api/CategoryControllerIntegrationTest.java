@@ -1,7 +1,7 @@
 package me.ezzedine.mohammed.personalspace.category.api;
 
-import me.ezzedine.mohammed.personalspace.category.api.advice.ArticleCategoryIdAlreadyExistsAdvice;
-import me.ezzedine.mohammed.personalspace.category.api.advice.ArticleCategoryValidationViolationAdvice;
+import me.ezzedine.mohammed.personalspace.category.api.advice.CategoryIdAlreadyExistsAdvice;
+import me.ezzedine.mohammed.personalspace.category.api.advice.CategoryValidationViolationAdvice;
 import me.ezzedine.mohammed.personalspace.category.core.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,30 +17,32 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.List;
 
-import static me.ezzedine.mohammed.personalspace.TestUtils.*;
+import static me.ezzedine.mohammed.personalspace.TestUtils.loadResource;
+import static me.ezzedine.mohammed.personalspace.TestUtils.loadResourceWithWhiteSpaces;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = {
-        ArticleCategoryController.class,
-        ArticleCategoryValidationViolationAdvice.class,
-        ArticleCategoryIdAlreadyExistsAdvice.class
+        CategoryController.class,
+        CategoryValidationViolationAdvice.class,
+        CategoryIdAlreadyExistsAdvice.class
 })
 @EnableWebMvc
 @AutoConfigureMockMvc
-class ArticleCategoryControllerIntegrationTest {
+class CategoryControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
-    private ArticleCategoryFetcher fetcher;
+    private CategoryFetcher fetcher;
 
     @MockBean
-    private ArticleCategoryPersister persister;
+    private CategoryPersister persister;
 
     @Nested
     @DisplayName("When fetching the summary of the existing categories")
@@ -48,8 +50,8 @@ class ArticleCategoryControllerIntegrationTest {
 
         @BeforeEach
         void setUp() {
-            ArticleCategory articleCategory = ArticleCategory.builder().id("articleCategoryId").name("articleCategoryName").canBeDeleted(true).build();
-            when(fetcher.fetchAll()).thenReturn(List.of(articleCategory));
+            Category category = Category.builder().id("articleCategoryId").name("articleCategoryName").canBeDeleted(true).build();
+            when(fetcher.fetchAll()).thenReturn(List.of(category));
         }
 
         @Test
@@ -73,8 +75,8 @@ class ArticleCategoryControllerIntegrationTest {
     class CreatingNewCategoryIntegrationTest {
 
         @BeforeEach
-        void setUp() throws ArticleCategoryValidationViolationException, ArticleCategoryIdAlreadyExistsException {
-            when(persister.persist(any())).thenReturn(ArticleCategoryCreationResult.builder().id("categoryId").build());
+        void setUp() throws CategoryValidationViolationException, CategoryIdAlreadyExistsException {
+            when(persister.persist(any())).thenReturn(CategoryCreationResult.builder().id("categoryId").build());
         }
 
         @Test
@@ -102,7 +104,7 @@ class ArticleCategoryControllerIntegrationTest {
         @Test
         @DisplayName("should return a bad request with the reasons of failure when the name is not valid")
         void should_return_a_bad_request_with_the_reasons_of_failure_when_the_name_is_not_valid() throws Exception {
-            when(persister.persist(any())).thenThrow(new ArticleCategoryValidationViolationException(List.of("firstReason", "secondReason")));
+            when(persister.persist(any())).thenThrow(new CategoryValidationViolationException(List.of("firstReason", "secondReason")));
 
             String response = mockMvc.perform(post("/api/categories")
                             .content(loadResource("category/api/create_category_request.json"))
@@ -117,7 +119,7 @@ class ArticleCategoryControllerIntegrationTest {
         @Test
         @DisplayName("should return a conflict status code when another category with a similar id already exists")
         void should_return_a_conflict_status_code_when_another_category_with_a_similar_id_already_exists() throws Exception {
-            when(persister.persist(any())).thenThrow(new ArticleCategoryIdAlreadyExistsException("categoryName"));
+            when(persister.persist(any())).thenThrow(new CategoryIdAlreadyExistsException("categoryName"));
 
             String response = mockMvc.perform(post("/api/categories")
                             .content(loadResource("category/api/create_category_request.json"))

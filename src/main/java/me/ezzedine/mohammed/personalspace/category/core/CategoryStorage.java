@@ -3,10 +3,10 @@ package me.ezzedine.mohammed.personalspace.category.core;
 import java.util.List;
 import java.util.Optional;
 
-public interface ArticleCategoryStorage {
+public interface CategoryStorage {
     boolean categoryExists(String id);
-    Optional<ArticleCategory> fetch(String id);
-    List<ArticleCategory> fetchAll();
-    void persist(ArticleCategory category);
+    Optional<Category> fetch(String id);
+    List<Category> fetchAll();
+    void persist(Category category);
     void delete(String id);
 }

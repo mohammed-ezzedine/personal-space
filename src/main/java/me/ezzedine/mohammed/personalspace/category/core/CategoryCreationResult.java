@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 @Builder
-public class ArticleCategoryCreationResult {
+public class CategoryCreationResult {
     private String id;
 }

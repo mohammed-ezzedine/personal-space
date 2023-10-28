@@ -11,67 +11,67 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ArticleCategoryNameAlphaValidatorTest {
+class CategoryNameAlphaValidatorTest {
 
-    private ArticleCategoryNameAlphaValidator validator;
+    private CategoryNameAlphaValidator validator;
 
     @BeforeEach
     void setUp() {
-        validator = new ArticleCategoryNameAlphaValidator();
+        validator = new CategoryNameAlphaValidator();
     }
 
     @Test
     @DisplayName("the name should at least contain one character")
     void the_name_should_at_least_contain_one_character() {
-        ArticleCategoryNameValidationResult result = validator.validate("");
+        CategoryNameValidationResult result = validator.validate("");
         assertFalse(result.isValid(), String.format("Validation result is %s", result));
         assertEquals(1, result.getViolations().size());
-        assertEquals(ArticleCategoryNameViolation.NOT_EMPTY, result.getViolations().get(0));
+        assertEquals(CategoryNameViolation.NOT_EMPTY, result.getViolations().get(0));
     }
 
     @Test
     @DisplayName("the name should at least contain one character other than a space")
     void the_name_should_at_least_contain_one_character_other_than_a_space() {
-        ArticleCategoryNameValidationResult result = validator.validate(" ");
+        CategoryNameValidationResult result = validator.validate(" ");
         assertFalse(result.isValid(), String.format("Validation result is %s", result));
         assertEquals(1, result.getViolations().size());
-        assertEquals(ArticleCategoryNameViolation.NOT_EMPTY, result.getViolations().get(0));
+        assertEquals(CategoryNameViolation.NOT_EMPTY, result.getViolations().get(0));
     }
 
     @ParameterizedTest
     @MethodSource("getNamesWithDigits")
     @DisplayName("the name should not be valid if it contains numbers")
     void the_name_should_not_be_valid_if_it_contains_numbers(String nameWithDigits) {
-        ArticleCategoryNameValidationResult result = validator.validate(nameWithDigits);
+        CategoryNameValidationResult result = validator.validate(nameWithDigits);
         assertFalse(result.isValid(), String.format("Validation result is %s", result));
         assertEquals(1, result.getViolations().size(), String.format("Validation result is %s", result));
-        assertEquals(ArticleCategoryNameViolation.NO_DIGITS, result.getViolations().get(0));
+        assertEquals(CategoryNameViolation.NO_DIGITS, result.getViolations().get(0));
     }
 
     @ParameterizedTest
     @MethodSource("getNamesWithSpecialCharacters")
     @DisplayName("the name should not be valid if it contains special characters")
     void the_name_should_not_be_valid_if_it_contains_special_characters(String invalidName) {
-        ArticleCategoryNameValidationResult result = validator.validate(invalidName);
+        CategoryNameValidationResult result = validator.validate(invalidName);
         assertFalse(result.isValid(), String.format("Validation result is %s", result));
         assertEquals(1, result.getViolations().size());
-        assertEquals(ArticleCategoryNameViolation.NO_SPECIAL_CHARACTERS, result.getViolations().get(0));
+        assertEquals(CategoryNameViolation.NO_SPECIAL_CHARACTERS, result.getViolations().get(0));
     }
 
     @ParameterizedTest
     @MethodSource("getNamesWithPunctuations")
     @DisplayName("the name should not be valid if it contains punctuations")
     void the_name_should_not_be_valid_if_it_contains_special_punctuations(String invalidName) {
-        ArticleCategoryNameValidationResult result = validator.validate(invalidName);
+        CategoryNameValidationResult result = validator.validate(invalidName);
         assertFalse(result.isValid(), String.format("Validation result is %s", result));
         assertEquals(1, result.getViolations().size());
-        assertEquals(ArticleCategoryNameViolation.NO_SPECIAL_CHARACTERS, result.getViolations().get(0));
+        assertEquals(CategoryNameViolation.NO_SPECIAL_CHARACTERS, result.getViolations().get(0));
     }
 
     @Test
     @DisplayName("the name should be valid if it only contains alpha characters with spaces")
     void the_name_should_be_valid_if_it_only_contains_alpha_characters_with_spaces() {
-        ArticleCategoryNameValidationResult result = validator.validate("Hello World");
+        CategoryNameValidationResult result = validator.validate("Hello World");
         assertTrue(result.isValid(), String.format("Validation result is %s", result));
         assertEquals(0, result.getViolations().size());
     }

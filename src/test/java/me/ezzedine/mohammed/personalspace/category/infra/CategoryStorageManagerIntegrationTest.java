@@ -1,8 +1,7 @@
 package me.ezzedine.mohammed.personalspace.category.infra;
 
 import me.ezzedine.mohammed.personalspace.DatabaseIntegrationTest;
-//import me.ezzedine.mohammed.personalspace.MongoDBContainerTestConfiguration;
-import me.ezzedine.mohammed.personalspace.category.core.ArticleCategory;
+import me.ezzedine.mohammed.personalspace.category.core.Category;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,23 +20,23 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = {
-        ArticleCategoryRepository.class,
-        ArticleCategoryStorageManager.class,
+        CategoryRepository.class,
+        CategoryStorageManager.class,
 })
 @EnableAutoConfiguration
 @AutoConfigureDataMongo
 @EnableMongoRepositories
-class ArticleCategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
+class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
 
     public static final String NAME = UUID.randomUUID().toString();
     public static final boolean CAN_BE_DELETED = true;
     @Autowired
-    private ArticleCategoryRepository repository;
-    private ArticleCategoryStorageManager storageManager;
+    private CategoryRepository repository;
+    private CategoryStorageManager storageManager;
 
     @BeforeEach
     void setUp() {
-        storageManager = new ArticleCategoryStorageManager(repository);
+        storageManager = new CategoryStorageManager(repository);
         repository.deleteAll();
     }
 
@@ -75,7 +74,7 @@ class ArticleCategoryStorageManagerIntegrationTest extends DatabaseIntegrationTe
         void it_should_return_a_list_of_one_item_when_one_category_exists() {
             String id = UUID.randomUUID().toString();
             repository.save(getEntity(id));
-            List<ArticleCategory> articleCategories = storageManager.fetchAll();
+            List<Category> articleCategories = storageManager.fetchAll();
             assertEquals(1, articleCategories.size());
             assertEquals(id, articleCategories.get(0).getId());
             assertEquals(NAME, articleCategories.get(0).getName());
@@ -85,11 +84,11 @@ class ArticleCategoryStorageManagerIntegrationTest extends DatabaseIntegrationTe
 
     @Nested
     @DisplayName("When fetching an article category given its id")
-    class FetchingArticleCategoryByIdIntegrationTest {
+    class FetchingCategoryByIdIntegrationTest {
         @Test
         @DisplayName("it should return an empty optional if the category does not exist")
         void it_should_return_an_empty_optional_if_the_category_does_not_exist() {
-            Optional<ArticleCategory> optionalCategory = storageManager.fetch(UUID.randomUUID().toString());
+            Optional<Category> optionalCategory = storageManager.fetch(UUID.randomUUID().toString());
             assertTrue(optionalCategory.isEmpty());
         }
 
@@ -99,7 +98,7 @@ class ArticleCategoryStorageManagerIntegrationTest extends DatabaseIntegrationTe
             String id = UUID.randomUUID().toString();
             repository.save(getEntity(id));
 
-            Optional<ArticleCategory> optionalCategory = storageManager.fetch(id);
+            Optional<Category> optionalCategory = storageManager.fetch(id);
             assertTrue(optionalCategory.isPresent());
             assertEquals(id, optionalCategory.get().getId());
             assertEquals(NAME, optionalCategory.get().getName());
@@ -109,14 +108,14 @@ class ArticleCategoryStorageManagerIntegrationTest extends DatabaseIntegrationTe
 
     @Nested
     @DisplayName("When persisting new article category entity")
-    class PersistingArticleCategoryIntegrationTest {
+    class PersistingCategoryIntegrationTest {
 
         @Test
         @DisplayName("the new entity should be persisted in the database")
         void the_new_entity_should_be_persisted_in_the_database() {
             String id = UUID.randomUUID().toString();
-            storageManager.persist(getArticleCategory(id));
-            List<ArticleCategoryEntity> allCategories = repository.findAll();
+            storageManager.persist(getCategory(id));
+            List<CategoryEntity> allCategories = repository.findAll();
             assertEquals(1, allCategories.size());
             assertEquals(id, allCategories.get(0).getId());
             assertEquals(NAME, allCategories.get(0).getName());
@@ -129,11 +128,11 @@ class ArticleCategoryStorageManagerIntegrationTest extends DatabaseIntegrationTe
             String id = UUID.randomUUID().toString();
             repository.save(getEntity(id));
 
-            ArticleCategory newCategory = ArticleCategory.builder().id(id).name(UUID.randomUUID().toString())
+            Category newCategory = Category.builder().id(id).name(UUID.randomUUID().toString())
                     .canBeDeleted(false).build();
             storageManager.persist(newCategory);
 
-            List<ArticleCategoryEntity> allCategories = repository.findAll();
+            List<CategoryEntity> allCategories = repository.findAll();
             assertEquals(1, allCategories.size());
             assertEquals(id, allCategories.get(0).getId());
             assertEquals(newCategory.getName(), allCategories.get(0).getName());
@@ -143,7 +142,7 @@ class ArticleCategoryStorageManagerIntegrationTest extends DatabaseIntegrationTe
 
     @Nested
     @DisplayName("When deleting an article category entity")
-    class DeletingArticleCategoryIntegrationTest {
+    class DeletingCategoryIntegrationTest {
         @Test
         @DisplayName("the entity should be deleted from the store")
         void the_entity_should_be_deleted_from_the_store() {
@@ -152,21 +151,21 @@ class ArticleCategoryStorageManagerIntegrationTest extends DatabaseIntegrationTe
 
             storageManager.delete(id);
 
-            List<ArticleCategoryEntity> allCategories = repository.findAll();
+            List<CategoryEntity> allCategories = repository.findAll();
             assertEquals(0, allCategories.size());
         }
     }
 
-    private static ArticleCategory getArticleCategory(String id) {
-        return ArticleCategory.builder()
+    private static Category getCategory(String id) {
+        return Category.builder()
                 .id(id)
                 .name(NAME)
                 .canBeDeleted(CAN_BE_DELETED)
                 .build();
     }
 
-    private static ArticleCategoryEntity getEntity(String id) {
-        return ArticleCategoryEntity.builder()
+    private static CategoryEntity getEntity(String id) {
+        return CategoryEntity.builder()
                 .id(id)
                 .name(NAME)
                 .canBeDeleted(CAN_BE_DELETED)

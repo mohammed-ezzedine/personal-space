@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class ArticleCategoryValidationViolationException extends Exception {
+public class CategoryValidationViolationException extends Exception {
 
     private final List<String> reasons;
 }

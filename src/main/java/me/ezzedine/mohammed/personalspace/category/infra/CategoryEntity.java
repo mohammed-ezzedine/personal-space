@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Builder
 @Document
-public class ArticleCategoryEntity {
+public class CategoryEntity {
     private String id;
     private String name;
     @Accessors(fluent = true)

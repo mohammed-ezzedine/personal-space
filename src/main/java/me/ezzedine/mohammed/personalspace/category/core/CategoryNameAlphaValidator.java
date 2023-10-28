@@ -6,35 +6,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ArticleCategoryNameAlphaValidator implements ArticleCategoryNameValidator {
+public class CategoryNameAlphaValidator implements CategoryNameValidator {
 
     @Override
-    public ArticleCategoryNameValidationResult validate(String name) {
+    public CategoryNameValidationResult validate(String name) {
         boolean valid = true;
-        List<ArticleCategoryNameViolation> violations = new ArrayList<>();
+        List<CategoryNameViolation> violations = new ArrayList<>();
 
         name = name.trim();
 
         if (nameIsValid(name)) {
-            return ArticleCategoryNameValidationResult.builder().valid(valid).violations(violations).build();
+            return CategoryNameValidationResult.builder().valid(valid).violations(violations).build();
         }
 
         if (name.trim().isEmpty()) {
             valid = false;
-            violations.add(ArticleCategoryNameViolation.NOT_EMPTY);
+            violations.add(CategoryNameViolation.NOT_EMPTY);
         }
 
         if (nameHasDigits(name)) {
             valid = false;
-            violations.add(ArticleCategoryNameViolation.NO_DIGITS);
+            violations.add(CategoryNameViolation.NO_DIGITS);
         }
 
         if (nameHasSpecialCharacter(name)) {
             valid = false;
-            violations.add(ArticleCategoryNameViolation.NO_SPECIAL_CHARACTERS);
+            violations.add(CategoryNameViolation.NO_SPECIAL_CHARACTERS);
         }
 
-        return ArticleCategoryNameValidationResult.builder().valid(valid).violations(violations).build();
+        return CategoryNameValidationResult.builder().valid(valid).violations(violations).build();
     }
 
     private boolean nameHasSpecialCharacter(String name) {
