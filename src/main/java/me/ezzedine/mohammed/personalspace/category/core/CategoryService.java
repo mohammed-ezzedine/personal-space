@@ -17,7 +17,7 @@ public class CategoryService implements CategoryFetcher, CategoryPersister {
 
     @Override
     public List<Category> fetchAll() {
-        return storage.fetchAll();
+        return storage.fetchAllOrderedByOrder();
     }
 
     @Override
@@ -35,6 +35,11 @@ public class CategoryService implements CategoryFetcher, CategoryPersister {
     }
 
     @Override
+    public void updateCategoriesOrders(UpdateCategoriesOrdersRequest request) {
+        request.getCategoryOrders().forEach(this::updateCategoryOrder);
+    }
+
+    @Override
     public void delete(String id) throws CategoryNotFoundException, CannotDeleteCategoryException {
         Category category = validateCategoryExists(id);
 
@@ -43,6 +48,14 @@ public class CategoryService implements CategoryFetcher, CategoryPersister {
         }
 
         storage.delete(id);
+    }
+
+    private void updateCategoryOrder(UpdateCategoriesOrdersRequest.CategoryOrder categoryOrder) {
+        Optional<Category> category = storage.fetch(categoryOrder.getCategoryId());
+        category.ifPresent(c -> {
+            c.setOrder(categoryOrder.getOrder());
+            storage.persist(c);
+        });
     }
 
     private Category validateCategoryExists(String id) throws CategoryNotFoundException {

@@ -59,12 +59,12 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
     }
 
     @Nested
-    @DisplayName("When fetching the list of existing article categories")
-    class FetchingListOfArticleCategoriesIntegrationTest {
+    @DisplayName("When fetching the list of existing categories in order")
+    class FetchingListOfCategoriesIntegrationTest {
         @Test
         @DisplayName("it should return an empty list if none exist")
         void it_should_return_an_empty_list_if_none_exist() {
-            assertEquals(Collections.emptyList(), storageManager.fetchAll());
+            assertEquals(Collections.emptyList(), storageManager.fetchAllOrderedByOrder());
         }
 
         @Test
@@ -72,12 +72,29 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
         void it_should_return_a_list_of_one_item_when_one_category_exists() {
             String id = UUID.randomUUID().toString();
             repository.save(getEntity(id));
-            List<Category> articleCategories = storageManager.fetchAll();
+            List<Category> articleCategories = storageManager.fetchAllOrderedByOrder();
             assertEquals(1, articleCategories.size());
             assertEquals(id, articleCategories.get(0).getId());
             assertEquals(NAME, articleCategories.get(0).getName());
             assertEquals(CAN_BE_DELETED, articleCategories.get(0).canBeDeleted());
             assertEquals(ORDER, articleCategories.get(0).getOrder());
+        }
+
+        @Test
+        @DisplayName("it should return the list of all existing categories sorted in order by their order")
+        void it_should_return_the_list_of_all_existing_categories_sorted_in_order_by_their_order() {
+            CategoryEntity thirdCategory = getEntityWithOrder(8);
+            CategoryEntity firstCategory = getEntityWithOrder(2);
+            CategoryEntity secondCategory = getEntityWithOrder(5);
+            repository.save(thirdCategory);
+            repository.save(firstCategory);
+            repository.save(secondCategory);
+
+            List<Category> categories = storageManager.fetchAllOrderedByOrder();
+            assertEquals(3, categories.size());
+            assertEquals(firstCategory.getId(), categories.get(0).getId());
+            assertEquals(secondCategory.getId(), categories.get(1).getId());
+            assertEquals(thirdCategory.getId(), categories.get(2).getId());
         }
     }
 

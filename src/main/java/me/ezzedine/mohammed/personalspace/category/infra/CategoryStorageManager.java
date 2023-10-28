@@ -25,8 +25,8 @@ public class CategoryStorageManager implements CategoryStorage {
     }
 
     @Override
-    public List<Category> fetchAll() {
-        return repository.findAll().stream().map(CategoryStorageManager::fromEntity).toList();
+    public List<Category> fetchAllOrderedByOrder() {
+        return repository.findAllByOrderByOrderAsc().stream().map(CategoryStorageManager::fromEntity).toList();
     }
 
     @Override

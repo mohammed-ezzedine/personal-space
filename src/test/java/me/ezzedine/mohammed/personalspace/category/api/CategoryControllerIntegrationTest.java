@@ -3,6 +3,7 @@ package me.ezzedine.mohammed.personalspace.category.api;
 import me.ezzedine.mohammed.personalspace.category.api.advice.CategoryIdAlreadyExistsAdvice;
 import me.ezzedine.mohammed.personalspace.category.api.advice.CategoryValidationViolationAdvice;
 import me.ezzedine.mohammed.personalspace.category.core.*;
+import me.ezzedine.mohammed.personalspace.category.core.UpdateCategoriesOrdersRequest.CategoryOrder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -21,9 +22,9 @@ import static me.ezzedine.mohammed.personalspace.TestUtils.loadResource;
 import static me.ezzedine.mohammed.personalspace.TestUtils.loadResourceWithWhiteSpaces;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = {
@@ -129,6 +130,25 @@ class CategoryControllerIntegrationTest {
 
             String expectedResponse = loadResourceWithWhiteSpaces("category/api/category_creation_id_conflict_response.json");
             assertEquals(expectedResponse, response);
+        }
+    }
+
+    @Nested
+    @DisplayName("When updating the categories orders")
+    class UpdatingCategoriesOrdersIntegrationTest {
+
+        @Test
+        @DisplayName("should return a success status upon successfully updating the orders")
+        void should_return_a_success_status_upon_successfully_updating_the_orders() throws Exception {
+            mockMvc.perform(
+                    put("/api/categories/orders")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(loadResource("category/api/update_orders_request.json"))
+            ).andExpect(status().is2xxSuccessful());
+
+            UpdateCategoriesOrdersRequest request = UpdateCategoriesOrdersRequest.builder()
+                    .categoryOrders(List.of(CategoryOrder.builder().categoryId("categoryId").order(4).build())).build();
+            verify(persister).updateCategoriesOrders(request);
         }
     }
 }

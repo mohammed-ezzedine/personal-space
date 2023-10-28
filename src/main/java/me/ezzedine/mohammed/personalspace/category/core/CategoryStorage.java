@@ -6,7 +6,7 @@ import java.util.Optional;
 public interface CategoryStorage {
     boolean categoryExists(String id);
     Optional<Category> fetch(String id);
-    List<Category> fetchAll();
+    List<Category> fetchAllOrderedByOrder();
     Optional<Category> fetchCategoryWithHighestOrder();
     void persist(Category category);
     void delete(String id);

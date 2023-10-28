@@ -42,7 +42,7 @@ class CategoryServiceTest {
         @DisplayName("it should fetch the categories from the storage")
         void it_should_fetch_the_categories_from_the_storage() {
             Category category = mock(Category.class);
-            when(storage.fetchAll()).thenReturn(List.of(category));
+            when(storage.fetchAllOrderedByOrder()).thenReturn(List.of(category));
             List<Category> articleCategories = service.fetchAll();
             assertEquals(1, articleCategories.size());
             assertEquals(category, articleCategories.get(0));
@@ -115,6 +115,75 @@ class CategoryServiceTest {
         void should_return_the_newly_generated_category_order() throws CategoryIdAlreadyExistsException, CategoryValidationViolationException {
             CategoryCreationResult creationResult = service.persist(PersistCategoryRequest.builder().name(NAME).build());
             assertEquals(ORDER, creationResult.getOrder());
+        }
+    }
+
+    @Nested
+    @DisplayName("When updating the order of the categories")
+    class UpdatingCategoryOrdersTest {
+        @Test
+        @DisplayName("should not fail if some of the category ids did not exist")
+        void should_not_fail_if_some_of_the_category_ids_did_not_exist() {
+            String id = UUID.randomUUID().toString();
+            when(storage.fetch(id)).thenReturn(Optional.empty());
+
+            UpdateCategoriesOrdersRequest.CategoryOrder categoryOrder = getCategoryOrderRequest(id);
+            UpdateCategoriesOrdersRequest request = getUpdateOrdersRequest(List.of(categoryOrder));
+            assertDoesNotThrow(() -> service.updateCategoriesOrders(request));
+        }
+
+        @Test
+        @DisplayName("should update the order for each of the specified categories")
+        void should_update_the_order_for_each_of_the_specified_categories() {
+            String firstCategoryId = UUID.randomUUID().toString();
+            String secondCategoryId = UUID.randomUUID().toString();
+            when(storage.fetch(firstCategoryId)).thenReturn(Optional.of(getCategory(firstCategoryId)));
+            when(storage.fetch(secondCategoryId)).thenReturn(Optional.of(getCategory(secondCategoryId)));
+
+            UpdateCategoriesOrdersRequest.CategoryOrder firstCategoryOrderRequest = getCategoryOrderRequest(firstCategoryId);
+            UpdateCategoriesOrdersRequest.CategoryOrder secondCategoryOrderRequest = getCategoryOrderRequest(secondCategoryId);
+
+            UpdateCategoriesOrdersRequest request = getUpdateOrdersRequest(List.of(firstCategoryOrderRequest, secondCategoryOrderRequest));
+            service.updateCategoriesOrders(request);
+
+            ArgumentCaptor<Category> argumentCaptor = ArgumentCaptor.forClass(Category.class);
+            verify(storage, times(2)).persist(argumentCaptor.capture());
+
+            assertEquals(firstCategoryId, argumentCaptor.getAllValues().get(0).getId());
+            assertEquals(firstCategoryOrderRequest.getOrder(), argumentCaptor.getAllValues().get(0).getOrder());
+
+            assertEquals(secondCategoryId, argumentCaptor.getAllValues().get(1).getId());
+            assertEquals(secondCategoryOrderRequest.getOrder(), argumentCaptor.getAllValues().get(1).getOrder());
+        }
+
+        @Test
+        @DisplayName("should not modify the other properties of the updated categories")
+        void should_not_modify_the_other_properties_of_the_updated_categories() {
+            String id = UUID.randomUUID().toString();
+            Category category = getCategory(id);
+            when(storage.fetch(id)).thenReturn(Optional.of(category));
+
+            UpdateCategoriesOrdersRequest.CategoryOrder categoryOrderRequest = getCategoryOrderRequest(id);
+            UpdateCategoriesOrdersRequest request = getUpdateOrdersRequest(List.of(categoryOrderRequest));
+            service.updateCategoriesOrders(request);
+
+            ArgumentCaptor<Category> argumentCaptor = ArgumentCaptor.forClass(Category.class);
+            verify(storage).persist(argumentCaptor.capture());
+
+            assertEquals(category.getName(), argumentCaptor.getValue().getName());
+            assertEquals(category.canBeDeleted(), argumentCaptor.getValue().canBeDeleted());
+        }
+
+        private static UpdateCategoriesOrdersRequest getUpdateOrdersRequest(List<UpdateCategoriesOrdersRequest.CategoryOrder> firstCategoryOrderRequest) {
+            return UpdateCategoriesOrdersRequest.builder().categoryOrders(firstCategoryOrderRequest).build();
+        }
+
+        private static UpdateCategoriesOrdersRequest.CategoryOrder getCategoryOrderRequest(String categoryId) {
+            return UpdateCategoriesOrdersRequest.CategoryOrder.builder().categoryId(categoryId).order(new Random().nextInt()).build();
+        }
+
+        private static Category getCategory(String id) {
+            return Category.builder().id(id).name(UUID.randomUUID().toString()).canBeDeleted(new Random().nextBoolean()).build();
         }
     }
 

@@ -32,6 +32,22 @@ public class CategoryController implements CategoryApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
+    @Override
+    public ResponseEntity<Void> updateCategoriesOrders(UpdateCategoriesOrdersApiRequest request) {
+        log.info("Received a request to update the order of the categories {}", request);
+        persister.updateCategoriesOrders(fromApiModel(request));
+        return ResponseEntity.noContent().build();
+    }
+
+    private static UpdateCategoriesOrdersRequest fromApiModel(UpdateCategoriesOrdersApiRequest request) {
+        return UpdateCategoriesOrdersRequest.builder()
+                .categoryOrders(request.getCategoriesOrders().stream().map(CategoryController::fromApiModel).toList()).build();
+    }
+
+    private static UpdateCategoriesOrdersRequest.CategoryOrder fromApiModel(UpdateCategoriesOrdersApiRequest.CategoryOrderApiRequest r) {
+        return UpdateCategoriesOrdersRequest.CategoryOrder.builder().categoryId(r.getCategoryId()).order(r.getCategoryOrder()).build();
+    }
+
     private static CategorySummaryApiModel toApiModel(Category category) {
         return CategorySummaryApiModel.builder().id(category.getId()).name(category.getName()).order(category.getOrder())
                 .canBeDeleted(category.canBeDeleted()).build();
