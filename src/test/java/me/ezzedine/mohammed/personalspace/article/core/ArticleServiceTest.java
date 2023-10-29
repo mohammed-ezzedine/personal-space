@@ -1,6 +1,5 @@
 package me.ezzedine.mohammed.personalspace.article.core;
 
-import me.ezzedine.mohammed.personalspace.category.core.Category;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryFetcher;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,6 +8,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,12 +39,9 @@ class ArticleServiceTest {
     @DisplayName("When creating a new article")
     class CreatingArticleTest {
 
-        private Category category;
 
         @BeforeEach
-        void setUp() throws CategoryNotFoundException {
-            category = mock(Category.class);
-            when(categoryFetcher.fetch(CATEGORY_ID)).thenReturn(category);
+        void setUp() {
             when(idGenerator.generate()).thenReturn(ARTICLE_ID);
         }
 
@@ -72,7 +69,7 @@ class ArticleServiceTest {
 
             assertEquals(ARTICLE_ID, argumentCaptor.getValue().getId());
             assertEquals(TITLE, argumentCaptor.getValue().getTitle());
-            assertEquals(category, argumentCaptor.getValue().getCategory());
+            assertEquals(CATEGORY_ID, argumentCaptor.getValue().getCategoryId());
             assertEquals(CONTENT, argumentCaptor.getValue().getContent());
             assertEquals(DESCRIPTION, argumentCaptor.getValue().getDescription());
         }
@@ -87,5 +84,38 @@ class ArticleServiceTest {
         private static ArticleCreationRequest getRequest() {
             return ArticleCreationRequest.builder().categoryId(CATEGORY_ID).title(TITLE).content(CONTENT).description(DESCRIPTION).build();
         }
+    }
+
+    @Nested
+    @DisplayName("When fetching an article's details")
+    class FetchingArticleDetailsTest {
+
+        @BeforeEach
+        void setUp() {
+            when(storage.fetch(ARTICLE_ID)).thenReturn(Optional.of(getArticle()));
+        }
+
+        @Test
+        @DisplayName("it should fail if the article does not exist")
+        void it_should_fail_if_the_article_does_not_exist() {
+            when(storage.fetch(ARTICLE_ID)).thenReturn(Optional.empty());
+            assertThrows(ArticleNotFoundException.class, () -> service.fetch(ARTICLE_ID));
+        }
+
+        @Test
+        @DisplayName("it should return the article details")
+        void it_should_return_the_article_details() throws ArticleNotFoundException {
+            Article article = service.fetch(ARTICLE_ID);
+            assertEquals(ARTICLE_ID, article.getId());
+            assertEquals(TITLE, article.getTitle());
+            assertEquals(DESCRIPTION, article.getDescription());
+            assertEquals(CONTENT, article.getContent());
+            assertEquals(CATEGORY_ID, article.getCategoryId());
+        }
+    }
+
+    private Article getArticle() {
+        return Article.builder().id(ARTICLE_ID).title(TITLE).description(DESCRIPTION).content(CONTENT)
+                .categoryId(CATEGORY_ID).build();
     }
 }

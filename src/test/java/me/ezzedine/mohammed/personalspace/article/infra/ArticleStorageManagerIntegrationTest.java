@@ -2,7 +2,6 @@ package me.ezzedine.mohammed.personalspace.article.infra;
 
 import me.ezzedine.mohammed.personalspace.DatabaseIntegrationTest;
 import me.ezzedine.mohammed.personalspace.article.core.Article;
-import me.ezzedine.mohammed.personalspace.category.core.Category;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -11,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = {
         ArticleStorageManager.class,
@@ -33,12 +32,9 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
 
     @Autowired
     private ArticleStorageManager storageManager;
-    private Category category;
 
     @BeforeEach
     void setUp() {
-        category = mock(Category.class);
-        when(category.getId()).thenReturn(CATEGORY_ID);
         repository.deleteAll();
     }
 
@@ -82,7 +78,37 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
         }
 
         private Article getArticle() {
-            return Article.builder().id(ID).category(category).title(TITLE).description(DESCRIPTION).content(CONTENT).build();
+            return Article.builder().id(ID).categoryId(CATEGORY_ID).title(TITLE).description(DESCRIPTION).content(CONTENT).build();
         }
+    }
+
+    @Nested
+    @DisplayName("When fetching an article from the storage")
+    class FetchingArticleFromStorageIntegrationTest {
+
+        @Test
+        @DisplayName("it should return an empty optional if the article does not exist")
+        void it_should_return_an_empty_optional_if_the_article_does_not_exist() {
+            Optional<Article> optionalArticle = storageManager.fetch(UUID.randomUUID().toString());
+            assertTrue(optionalArticle.isEmpty());
+        }
+
+        @Test
+        @DisplayName("it should return the article when it exists")
+        void it_should_return_the_article_when_it_exists() {
+            repository.save(getEntity());
+            Optional<Article> optionalArticle = storageManager.fetch(ID);
+            assertTrue(optionalArticle.isPresent());
+            assertEquals(ID, optionalArticle.get().getId());
+            assertEquals(DESCRIPTION, optionalArticle.get().getDescription());
+            assertEquals(CONTENT, optionalArticle.get().getContent());
+            assertEquals(TITLE, optionalArticle.get().getTitle());
+            assertEquals(CATEGORY_ID, optionalArticle.get().getCategoryId());
+        }
+    }
+
+    private ArticleEntity getEntity() {
+        return ArticleEntity.builder().id(ID).categoryId(CATEGORY_ID).title(TITLE).description(DESCRIPTION)
+                .content(CONTENT).build();
     }
 }

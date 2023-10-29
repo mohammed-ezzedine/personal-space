@@ -1,0 +1,7 @@
+{
+  "id": "articleId",
+  "title": "articleTitle",
+  "description": "articleDescription",
+  "content": "articleContent",
+  "categoryId": "articleCategoryId"
+}
