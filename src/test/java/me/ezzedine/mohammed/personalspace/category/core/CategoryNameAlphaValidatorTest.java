@@ -7,6 +7,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -51,8 +52,9 @@ class CategoryNameAlphaValidatorTest {
     @ParameterizedTest
     @MethodSource("getNamesWithSpecialCharacters")
     @DisplayName("the name should not be valid if it contains special characters")
-    void the_name_should_not_be_valid_if_it_contains_special_characters(String invalidName) {
-        CategoryNameValidationResult result = validator.validate(invalidName);
+    void the_name_should_not_be_valid_if_it_contains_special_characters(char specialCharacter) {
+        String name = getRandomNameWithCharacter(specialCharacter);
+        CategoryNameValidationResult result = validator.validate(name);
         assertFalse(result.isValid(), String.format("Validation result is %s", result));
         assertEquals(1, result.getViolations().size());
         assertEquals(CategoryNameViolation.NO_SPECIAL_CHARACTERS, result.getViolations().get(0));
@@ -61,8 +63,9 @@ class CategoryNameAlphaValidatorTest {
     @ParameterizedTest
     @MethodSource("getNamesWithPunctuations")
     @DisplayName("the name should not be valid if it contains punctuations")
-    void the_name_should_not_be_valid_if_it_contains_special_punctuations(String invalidName) {
-        CategoryNameValidationResult result = validator.validate(invalidName);
+    void the_name_should_not_be_valid_if_it_contains_special_punctuations(char punctuationSign) {
+        String name = getRandomNameWithCharacter(punctuationSign);
+        CategoryNameValidationResult result = validator.validate(name);
         assertFalse(result.isValid(), String.format("Validation result is %s", result));
         assertEquals(1, result.getViolations().size());
         assertEquals(CategoryNameViolation.NO_SPECIAL_CHARACTERS, result.getViolations().get(0));
@@ -74,6 +77,10 @@ class CategoryNameAlphaValidatorTest {
         CategoryNameValidationResult result = validator.validate("Hello World");
         assertTrue(result.isValid(), String.format("Validation result is %s", result));
         assertEquals(0, result.getViolations().size());
+    }
+
+    private static String getRandomNameWithCharacter(char invalidChar) {
+        return UUID.randomUUID().toString().replaceAll("[\\d-]", "") + invalidChar;
     }
 
     private static Stream<Character> getSpecialCharacters() {

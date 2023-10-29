@@ -38,7 +38,7 @@ public class CategoryNameAlphaValidator implements CategoryNameValidator {
     }
 
     private boolean nameHasSpecialCharacter(String name) {
-        return !name.isEmpty() && !name.matches(".*[a-zA-Z 0-9]+.*");
+        return !name.isEmpty() && !name.matches("[a-zA-Z 0-9]+");
     }
 
     private static boolean nameIsValid(String name) {
