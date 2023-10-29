@@ -5,6 +5,7 @@ import me.ezzedine.mohammed.personalspace.article.core.Article;
 import me.ezzedine.mohammed.personalspace.article.core.ArticleStorage;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,6 +22,11 @@ public class ArticleStorageManager implements ArticleStorage {
     @Override
     public Optional<Article> fetch(String id) {
         return repository.findById(id).map(ArticleStorageManager::fromEntity);
+    }
+
+    @Override
+    public List<Article> fetchAll() {
+        return repository.findAll().stream().map(ArticleStorageManager::fromEntity).toList();
     }
 
     private static ArticleEntity toEntity(Article article) {

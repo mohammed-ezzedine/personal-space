@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -111,6 +112,21 @@ class ArticleServiceTest {
             assertEquals(DESCRIPTION, article.getDescription());
             assertEquals(CONTENT, article.getContent());
             assertEquals(CATEGORY_ID, article.getCategoryId());
+        }
+    }
+
+    @Nested
+    @DisplayName("When fetching all the articles")
+    class FetchingAllArticlesTest {
+
+        @Test
+        @DisplayName("should retrieve their information from the storage")
+        void should_retrieve_their_information_from_the_storage() {
+            Article article = mock(Article.class);
+            when(storage.fetchAll()).thenReturn(List.of(article));
+            List<Article> articles = service.fetchAll();
+            assertEquals(1, articles.size());
+            assertEquals(article, articles.get(0));
         }
     }
 

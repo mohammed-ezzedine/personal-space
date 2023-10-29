@@ -16,6 +16,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import java.util.List;
+
 import static me.ezzedine.mohammed.personalspace.TestUtils.loadResource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,6 +49,48 @@ class ArticleControllerIntegrationTest {
 
     @MockBean
     private ArticleFetcher articleFetcher;
+
+    @Nested
+    @DisplayName("When fetching the details of all articles")
+    class FetchingAllArticlesDetailsIntegrationTest {
+        @Test
+        @DisplayName("should return a success status code with the details of the articles")
+        void should_return_a_success_status_code_with_the_details_of_the_articles() throws Exception {
+            when(articleFetcher.fetchAll()).thenReturn(List.of(getArticle()));
+
+            String response = mockMvc.perform(get("/api/articles"))
+                    .andExpect(status().is2xxSuccessful())
+                    .andReturn().getResponse().getContentAsString();
+
+            assertEquals(loadResource("article/api/all_articles_details_response.json"), response);
+        }
+    }
+
+    @Nested
+    @DisplayName("When fetching the details of an article")
+    class FetchingArticleDetailsIntegrationTest {
+
+        @Test
+        @DisplayName("should return a not found status code when the article id does not exist")
+        void should_return_a_not_found_status_code_when_the_article_id_does_not_exist() throws Exception {
+            when(articleFetcher.fetch(ARTICLE_ID)).thenThrow(ArticleNotFoundException.class);
+
+            mockMvc.perform(get("/api/articles/{articleId}", ARTICLE_ID))
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("should return a success status code with the details when the article exists")
+        void should_return_a_success_status_code_with_the_details_when_the_article_exists() throws Exception {
+            when(articleFetcher.fetch(ARTICLE_ID)).thenReturn(getArticle());
+
+            String response = mockMvc.perform(get("/api/articles/{articleId}", ARTICLE_ID))
+                    .andExpect(status().is2xxSuccessful())
+                    .andReturn().getResponse().getContentAsString();
+
+            assertEquals(loadResource("article/api/article_details_response.json"), response);
+        }
+    }
 
     @Nested
     @DisplayName("When creating a new category")
@@ -92,32 +136,6 @@ class ArticleControllerIntegrationTest {
             ).andReturn().getResponse().getContentAsString();
 
             assertEquals(loadResource("article/api/article_creation_response.json"), response);
-        }
-    }
-
-    @Nested
-    @DisplayName("When fetching the details of an article")
-    class FetchingArticleDetailsIntegrationTest {
-
-        @Test
-        @DisplayName("should return a not found status code when the article id does not exist")
-        void should_return_a_not_found_status_code_when_the_article_id_does_not_exist() throws Exception {
-            when(articleFetcher.fetch(ARTICLE_ID)).thenThrow(ArticleNotFoundException.class);
-
-            mockMvc.perform(get("/api/articles/{articleId}", ARTICLE_ID))
-                    .andExpect(status().isNotFound());
-        }
-
-        @Test
-        @DisplayName("should return a success status code with the details when the article exists")
-        void should_return_a_success_status_code_with_the_details_when_the_article_exists() throws Exception {
-            when(articleFetcher.fetch(ARTICLE_ID)).thenReturn(getArticle());
-
-            String response = mockMvc.perform(get("/api/articles/{articleId}", ARTICLE_ID))
-                    .andExpect(status().is2xxSuccessful())
-                    .andReturn().getResponse().getContentAsString();
-
-            assertEquals(loadResource("article/api/article_details_response.json"), response);
         }
     }
 

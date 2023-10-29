@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -17,11 +19,11 @@ public class ArticleController implements ArticleApi {
     private final ArticleFetcher articleFetcher;
 
     @Override
-    public ResponseEntity<ArticleCreationApiResponse> create(ArticleCreationApiRequest request) throws CategoryNotFoundException {
-        log.info("Received a request to create an article");
-        ArticleCreationResult result = articleCreator.create(toDomainModel(request));
-        ArticleCreationApiResponse response = ArticleCreationApiResponse.builder().id(result.getId()).build();
-        return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(response);
+    public ResponseEntity<List<ArticleApiModel>> getArticles() {
+        log.info("Received a request to fetch the article details");
+        List<Article> articles = articleFetcher.fetchAll();
+        List<ArticleApiModel> response = articles.stream().map(ArticleController::toApiModel).toList();
+        return ResponseEntity.ok(response);
     }
 
     @Override
@@ -29,6 +31,14 @@ public class ArticleController implements ArticleApi {
         log.info("Received a request to fetch the details of article with id={}", id);
         Article article = articleFetcher.fetch(id);
         return ResponseEntity.ok(toApiModel(article));
+    }
+
+    @Override
+    public ResponseEntity<ArticleCreationApiResponse> create(ArticleCreationApiRequest request) throws CategoryNotFoundException {
+        log.info("Received a request to create an article");
+        ArticleCreationResult result = articleCreator.create(toDomainModel(request));
+        ArticleCreationApiResponse response = ArticleCreationApiResponse.builder().id(result.getId()).build();
+        return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(response);
     }
 
     private static ArticleApiModel toApiModel(Article article) {

@@ -5,12 +5,17 @@ import me.ezzedine.mohammed.personalspace.category.core.CategoryNotFoundExceptio
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequestMapping("api/articles")
 public interface ArticleApi {
 
-    @PostMapping
-    ResponseEntity<ArticleCreationApiResponse> create(@RequestBody ArticleCreationApiRequest request) throws CategoryNotFoundException;
+    @GetMapping
+    ResponseEntity<List<ArticleApiModel>> getArticles();
 
     @GetMapping("{id}")
     ResponseEntity<ArticleApiModel> getArticle(@PathVariable String id) throws ArticleNotFoundException;
+
+    @PostMapping
+    ResponseEntity<ArticleCreationApiResponse> create(@RequestBody ArticleCreationApiRequest request) throws CategoryNotFoundException;
 }

@@ -5,6 +5,8 @@ import me.ezzedine.mohammed.personalspace.category.core.CategoryFetcher;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ArticleService implements ArticleCreator, ArticleFetcher {
@@ -37,5 +39,10 @@ public class ArticleService implements ArticleCreator, ArticleFetcher {
     @Override
     public Article fetch(String id) throws ArticleNotFoundException {
         return storage.fetch(id).orElseThrow(() -> new ArticleNotFoundException(id));
+    }
+
+    @Override
+    public List<Article> fetchAll() {
+        return storage.fetchAll();
     }
 }

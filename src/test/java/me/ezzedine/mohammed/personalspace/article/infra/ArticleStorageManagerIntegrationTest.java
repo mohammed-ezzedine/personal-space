@@ -107,6 +107,29 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
         }
     }
 
+    @Nested
+    @DisplayName("When fetching the list of articles in the storage")
+    class FetchingListOfArticlesIntegrationTest {
+        @Test
+        @DisplayName("should return an empty list when no articles exist")
+        void should_return_an_empty_list_when_no_articles_exist() {
+            assertTrue(storageManager.fetchAll().isEmpty());
+        }
+
+        @Test
+        @DisplayName("should return a list of one article when only one exists")
+        void should_return_a_list_of_one_article_when_only_one_exists() {
+            repository.save(getEntity());
+            List<Article> articles = storageManager.fetchAll();
+            assertEquals(1, articles.size());
+            assertEquals(ID, articles.get(0).getId());
+            assertEquals(TITLE, articles.get(0).getTitle());
+            assertEquals(DESCRIPTION, articles.get(0).getDescription());
+            assertEquals(CONTENT, articles.get(0).getContent());
+            assertEquals(CATEGORY_ID, articles.get(0).getCategoryId());
+        }
+    }
+
     private ArticleEntity getEntity() {
         return ArticleEntity.builder().id(ID).categoryId(CATEGORY_ID).title(TITLE).description(DESCRIPTION)
                 .content(CONTENT).build();
