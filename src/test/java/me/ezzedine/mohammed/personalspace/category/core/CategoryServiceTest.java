@@ -35,6 +35,21 @@ class CategoryServiceTest {
     }
 
     @Nested
+    @DisplayName("When checking if a category exists by id")
+    class CheckingCategoryExistsTest {
+
+        @Test
+        @DisplayName("should consult the storage")
+        void should_consult_the_storage() {
+            String id = UUID.randomUUID().toString();
+            boolean verdict = new Random().nextBoolean();
+            when(storage.categoryExists(id)).thenReturn(verdict);
+            boolean exists = service.exists(id);
+            assertEquals(verdict, exists);
+        }
+    }
+
+    @Nested
     @DisplayName("When fetching the list of existing categories")
     class FetchingAllCategoriesTest {
 

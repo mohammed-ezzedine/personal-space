@@ -21,6 +21,11 @@ public class CategoryService implements CategoryFetcher, CategoryPersister {
     }
 
     @Override
+    public boolean exists(String id) {
+        return storage.categoryExists(id);
+    }
+
+    @Override
     public CategoryCreationResult persist(PersistCategoryRequest request) throws CategoryValidationViolationException, CategoryIdAlreadyExistsException {
         validateCategoryName(request);
 
