@@ -21,8 +21,8 @@ public class CategoryService implements CategoryFetcher, CategoryPersister {
     }
 
     @Override
-    public boolean exists(String id) {
-        return storage.categoryExists(id);
+    public Category fetch(String id) throws CategoryNotFoundException {
+        return storage.fetch(id).orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
     @Override

@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface CategoryFetcher {
     List<Category> fetchAll();
-    boolean exists(String id);
+    Category fetch(String id) throws CategoryNotFoundException;
 }

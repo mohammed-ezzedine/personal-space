@@ -35,17 +35,22 @@ class CategoryServiceTest {
     }
 
     @Nested
-    @DisplayName("When checking if a category exists by id")
-    class CheckingCategoryExistsTest {
+    @DisplayName("When fetching a category by id")
+    class FetchingCategoryTest {
 
         @Test
-        @DisplayName("should consult the storage")
-        void should_consult_the_storage() {
-            String id = UUID.randomUUID().toString();
-            boolean verdict = new Random().nextBoolean();
-            when(storage.categoryExists(id)).thenReturn(verdict);
-            boolean exists = service.exists(id);
-            assertEquals(verdict, exists);
+        @DisplayName("should retrieve it from the storage")
+        void should_retrieve_it_from_the_storage() throws CategoryNotFoundException {
+            Category category = mock(Category.class);
+            when(storage.fetch(ID)).thenReturn(Optional.of(category));
+            assertEquals(category, service.fetch(ID));
+        }
+
+        @Test
+        @DisplayName("should fail if the category does not exist")
+        void should_fail_if_the_category_does_not_exist() {
+            when(storage.fetch(ID)).thenReturn(Optional.empty());
+            assertThrows(CategoryNotFoundException.class, () -> service.fetch(ID));
         }
     }
 

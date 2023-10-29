@@ -7,10 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import java.util.*;
 
@@ -20,9 +17,6 @@ import static org.junit.jupiter.api.Assertions.*;
         CategoryRepository.class,
         CategoryStorageManager.class,
 })
-@EnableAutoConfiguration
-@AutoConfigureDataMongo
-@EnableMongoRepositories
 class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
 
     public static final String NAME = UUID.randomUUID().toString();

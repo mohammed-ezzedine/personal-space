@@ -1,5 +1,6 @@
 package me.ezzedine.mohammed.personalspace.article.core;
 
+import me.ezzedine.mohammed.personalspace.category.core.Category;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryFetcher;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,16 +39,19 @@ class ArticleServiceTest {
     @DisplayName("When creating a new article")
     class CreatingArticleTest {
 
+        private Category category;
+
         @BeforeEach
-        void setUp() {
-            when(categoryFetcher.exists(CATEGORY_ID)).thenReturn(true);
+        void setUp() throws CategoryNotFoundException {
+            category = mock(Category.class);
+            when(categoryFetcher.fetch(CATEGORY_ID)).thenReturn(category);
             when(idGenerator.generate()).thenReturn(ARTICLE_ID);
         }
 
         @Test
         @DisplayName("should throw an exception if the category does not exist")
-        void should_throw_an_exception_if_the_category_does_not_exist() {
-            when(categoryFetcher.exists(CATEGORY_ID)).thenReturn(false);
+        void should_throw_an_exception_if_the_category_does_not_exist() throws CategoryNotFoundException {
+            when(categoryFetcher.fetch(CATEGORY_ID)).thenThrow(CategoryNotFoundException.class);
             assertThrows(CategoryNotFoundException.class, () -> service.create(getRequest()));
         }
 
@@ -68,7 +72,7 @@ class ArticleServiceTest {
 
             assertEquals(ARTICLE_ID, argumentCaptor.getValue().getId());
             assertEquals(TITLE, argumentCaptor.getValue().getTitle());
-            assertEquals(CATEGORY_ID, argumentCaptor.getValue().getCategoryId());
+            assertEquals(category, argumentCaptor.getValue().getCategory());
             assertEquals(CONTENT, argumentCaptor.getValue().getContent());
             assertEquals(DESCRIPTION, argumentCaptor.getValue().getDescription());
         }

@@ -1,6 +1,7 @@
 package me.ezzedine.mohammed.personalspace.article.core;
 
 import lombok.RequiredArgsConstructor;
+import me.ezzedine.mohammed.personalspace.category.core.Category;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryFetcher;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryNotFoundException;
 import org.springframework.stereotype.Service;
@@ -15,27 +16,19 @@ public class ArticleService implements ArticleCreator {
 
     @Override
     public ArticleCreationResult create(ArticleCreationRequest request) throws CategoryNotFoundException {
-        validateCategoryIdExists(request);
+        Category category = categoryFetcher.fetch(request.getCategoryId());
 
-        String id = saveArticleInStorage(request);
+        String id = saveArticleInStorage(request, category);
 
         return ArticleCreationResult.builder().id(id).build();
     }
 
-    private String saveArticleInStorage(ArticleCreationRequest request) {
+    private String saveArticleInStorage(ArticleCreationRequest request, Category category) {
         String articleId = idGenerator.generate();
-        storage.save(buildArticle(request, articleId));
+        Article article = Article.builder().id(articleId).content(request.getContent()).category(category)
+                .description(request.getDescription()).title(request.getTitle()).build();
+        storage.save(article);
         return articleId;
     }
 
-    private static Article buildArticle(ArticleCreationRequest request, String articleId) {
-        return Article.builder().id(articleId).categoryId(request.getCategoryId()).content(request.getContent())
-                .description(request.getDescription()).title(request.getTitle()).build();
-    }
-
-    private void validateCategoryIdExists(ArticleCreationRequest request) throws CategoryNotFoundException {
-        if (!categoryFetcher.exists(request.getCategoryId())) {
-            throw new CategoryNotFoundException(request.getCategoryId());
-        }
-    }
 }
