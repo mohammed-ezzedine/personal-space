@@ -9,5 +9,4 @@ public class CategorySummaryApiModel {
     private String id;
     private String name;
     private int order;
-    private boolean canBeDeleted;
 }

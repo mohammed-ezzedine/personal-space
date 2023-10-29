@@ -82,17 +82,6 @@ class CategoryServiceTest {
         }
 
         @Test
-        @DisplayName("should persist the new category with the option to be deleted in the future")
-        void should_persist_the_new_category_with_the_option_to_be_deleted_in_the_future() throws CategoryValidationViolationException, CategoryIdAlreadyExistsException {
-            service.persist(PersistCategoryRequest.builder().name(NAME).build());
-
-            ArgumentCaptor<Category> argumentCaptor = ArgumentCaptor.forClass(Category.class);
-            verify(storage).persist(argumentCaptor.capture());
-
-            assertTrue(argumentCaptor.getValue().canBeDeleted());
-        }
-
-        @Test
         @DisplayName("it should persist the new category with the resolved order")
         void it_should_persist_the_new_category_with_the_resolved_order() throws CategoryIdAlreadyExistsException, CategoryValidationViolationException {
             service.persist(PersistCategoryRequest.builder().name(NAME).build());
@@ -171,7 +160,6 @@ class CategoryServiceTest {
             verify(storage).persist(argumentCaptor.capture());
 
             assertEquals(category.getName(), argumentCaptor.getValue().getName());
-            assertEquals(category.canBeDeleted(), argumentCaptor.getValue().canBeDeleted());
         }
 
         private static UpdateCategoriesOrdersRequest getUpdateOrdersRequest(List<UpdateCategoriesOrdersRequest.CategoryOrder> firstCategoryOrderRequest) {
@@ -183,7 +171,7 @@ class CategoryServiceTest {
         }
 
         private static Category getCategory(String id) {
-            return Category.builder().id(id).name(UUID.randomUUID().toString()).canBeDeleted(new Random().nextBoolean()).build();
+            return Category.builder().id(id).name(UUID.randomUUID().toString()).build();
         }
     }
 
@@ -199,17 +187,9 @@ class CategoryServiceTest {
         }
 
         @Test
-        @DisplayName("it should fail if the category is marked not to be deleted")
-        void it_should_fail_if_the_category_is_marked_not_to_be_deleted() {
-            Category category = Category.builder().id(ID).name(NAME).canBeDeleted(false).build();
-            when(storage.fetch(ID)).thenReturn(Optional.of(category));
-            assertThrows(CannotDeleteCategoryException.class, () -> service.delete(ID));
-        }
-
-        @Test
         @DisplayName("it should delete the category from the store when found")
-        void it_should_delete_the_category_from_the_store_when_found() throws CategoryNotFoundException, CannotDeleteCategoryException {
-            Category category = Category.builder().id(ID).name(NAME).canBeDeleted(true).build();
+        void it_should_delete_the_category_from_the_store_when_found() throws CategoryNotFoundException {
+            Category category = Category.builder().id(ID).name(NAME).build();
             when(storage.fetch(ID)).thenReturn(Optional.of(category));
             service.delete(ID);
             verify(storage).delete(ID);

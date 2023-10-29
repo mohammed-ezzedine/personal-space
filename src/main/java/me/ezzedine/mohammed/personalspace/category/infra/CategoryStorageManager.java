@@ -48,7 +48,6 @@ public class CategoryStorageManager implements CategoryStorage {
         return CategoryEntity.builder()
                 .id(category.getId())
                 .name(category.getName())
-                .canBeDeleted(category.canBeDeleted())
                 .order(category.getOrder())
                 .build();
     }
@@ -57,7 +56,6 @@ public class CategoryStorageManager implements CategoryStorage {
         return Category.builder()
                 .id(entity.getId())
                 .name(entity.getName())
-                .canBeDeleted(entity.canBeDeleted())
                 .order(entity.getOrder())
                 .build();
     }

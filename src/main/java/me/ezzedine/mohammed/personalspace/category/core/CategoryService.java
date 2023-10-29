@@ -29,7 +29,7 @@ public class CategoryService implements CategoryFetcher, CategoryPersister {
 
         int order = orderResolver.resolveOrderForNewCategory();
 
-        storage.persist(Category.builder().id(categoryId).name(request.getName()).canBeDeleted(true).order(order).build());
+        storage.persist(Category.builder().id(categoryId).name(request.getName()).order(order).build());
 
         return CategoryCreationResult.builder().id(categoryId).order(order).build();
     }
@@ -40,13 +40,8 @@ public class CategoryService implements CategoryFetcher, CategoryPersister {
     }
 
     @Override
-    public void delete(String id) throws CategoryNotFoundException, CannotDeleteCategoryException {
-        Category category = validateCategoryExists(id);
-
-        if (!category.canBeDeleted()) {
-            throw new CannotDeleteCategoryException(id);
-        }
-
+    public void delete(String id) throws CategoryNotFoundException {
+        validateCategoryExists(id);
         storage.delete(id);
     }
 
@@ -58,13 +53,11 @@ public class CategoryService implements CategoryFetcher, CategoryPersister {
         });
     }
 
-    private Category validateCategoryExists(String id) throws CategoryNotFoundException {
+    private void validateCategoryExists(String id) throws CategoryNotFoundException {
         Optional<Category> optionalCategory = storage.fetch(id);
         if (optionalCategory.isEmpty()) {
             throw new CategoryNotFoundException(id);
         }
-
-        return optionalCategory.get();
     }
 
     private void validateIdIsNotTaken(PersistCategoryRequest request, String categoryId) throws CategoryIdAlreadyExistsException {

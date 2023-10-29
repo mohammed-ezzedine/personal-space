@@ -51,7 +51,7 @@ class CategoryControllerIntegrationTest {
 
         @BeforeEach
         void setUp() {
-            Category category = Category.builder().id("articleCategoryId").name("articleCategoryName").canBeDeleted(true).order(7).build();
+            Category category = Category.builder().id("articleCategoryId").name("articleCategoryName").order(7).build();
             when(fetcher.fetchAll()).thenReturn(List.of(category));
         }
 

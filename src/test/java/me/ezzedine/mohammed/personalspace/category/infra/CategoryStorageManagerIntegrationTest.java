@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
 
     public static final String NAME = UUID.randomUUID().toString();
-    public static final boolean CAN_BE_DELETED = true;
     public static final int ORDER = new Random().nextInt();
     @Autowired
     private CategoryRepository repository;
@@ -76,7 +75,6 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(1, articleCategories.size());
             assertEquals(id, articleCategories.get(0).getId());
             assertEquals(NAME, articleCategories.get(0).getName());
-            assertEquals(CAN_BE_DELETED, articleCategories.get(0).canBeDeleted());
             assertEquals(ORDER, articleCategories.get(0).getOrder());
         }
 
@@ -118,7 +116,6 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertTrue(optionalCategory.isPresent());
             assertEquals(id, optionalCategory.get().getId());
             assertEquals(NAME, optionalCategory.get().getName());
-            assertEquals(CAN_BE_DELETED, optionalCategory.get().canBeDeleted());
             assertEquals(ORDER, optionalCategory.get().getOrder());
         }
     }
@@ -168,7 +165,6 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(1, allCategories.size());
             assertEquals(id, allCategories.get(0).getId());
             assertEquals(NAME, allCategories.get(0).getName());
-            assertEquals(CAN_BE_DELETED, allCategories.get(0).canBeDeleted());
             assertEquals(ORDER, allCategories.get(0).getOrder());
         }
 
@@ -178,15 +174,14 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             String id = UUID.randomUUID().toString();
             repository.save(getEntity(id));
 
-            Category newCategory = Category.builder().id(id).name(UUID.randomUUID().toString())
-                    .canBeDeleted(false).build();
+            Category newCategory = Category.builder().id(id).name(UUID.randomUUID().toString()).order(new Random().nextInt()).build();
             storageManager.persist(newCategory);
 
             List<CategoryEntity> allCategories = repository.findAll();
             assertEquals(1, allCategories.size());
             assertEquals(id, allCategories.get(0).getId());
             assertEquals(newCategory.getName(), allCategories.get(0).getName());
-            assertEquals(newCategory.canBeDeleted(), allCategories.get(0).canBeDeleted());
+            assertEquals(newCategory.getOrder(), allCategories.get(0).getOrder());
         }
     }
 
@@ -210,7 +205,6 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
         return Category.builder()
                 .id(id)
                 .name(NAME)
-                .canBeDeleted(CAN_BE_DELETED)
                 .order(ORDER)
                 .build();
     }
@@ -219,7 +213,6 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
         return CategoryEntity.builder()
                 .id(id)
                 .name(NAME)
-                .canBeDeleted(CAN_BE_DELETED)
                 .order(ORDER)
                 .build();
     }
@@ -228,7 +221,6 @@ class CategoryStorageManagerIntegrationTest extends DatabaseIntegrationTest {
         return CategoryEntity.builder()
                 .id(UUID.randomUUID().toString())
                 .name(NAME)
-                .canBeDeleted(CAN_BE_DELETED)
                 .order(order)
                 .build();
     }

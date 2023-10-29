@@ -49,7 +49,6 @@ public class CategoryController implements CategoryApi {
     }
 
     private static CategorySummaryApiModel toApiModel(Category category) {
-        return CategorySummaryApiModel.builder().id(category.getId()).name(category.getName()).order(category.getOrder())
-                .canBeDeleted(category.canBeDeleted()).build();
+        return CategorySummaryApiModel.builder().id(category.getId()).name(category.getName()).order(category.getOrder()).build();
     }
 }
