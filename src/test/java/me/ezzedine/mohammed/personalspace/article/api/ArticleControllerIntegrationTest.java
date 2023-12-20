@@ -58,7 +58,7 @@ class ArticleControllerIntegrationTest {
         void should_return_a_success_status_code_with_the_details_of_the_articles() throws Exception {
             when(articleFetcher.fetchAll()).thenReturn(List.of(getArticle()));
 
-            String response = mockMvc.perform(get("/api/articles"))
+            String response = mockMvc.perform(get("/articles"))
                     .andExpect(status().is2xxSuccessful())
                     .andReturn().getResponse().getContentAsString();
 
@@ -75,7 +75,7 @@ class ArticleControllerIntegrationTest {
         void should_return_a_not_found_status_code_when_the_article_id_does_not_exist() throws Exception {
             when(articleFetcher.fetch(ARTICLE_ID)).thenThrow(ArticleNotFoundException.class);
 
-            mockMvc.perform(get("/api/articles/{articleId}", ARTICLE_ID))
+            mockMvc.perform(get("/articles/{articleId}", ARTICLE_ID))
                     .andExpect(status().isNotFound());
         }
 
@@ -84,7 +84,7 @@ class ArticleControllerIntegrationTest {
         void should_return_a_success_status_code_with_the_details_when_the_article_exists() throws Exception {
             when(articleFetcher.fetch(ARTICLE_ID)).thenReturn(getArticle());
 
-            String response = mockMvc.perform(get("/api/articles/{articleId}", ARTICLE_ID))
+            String response = mockMvc.perform(get("/articles/{articleId}", ARTICLE_ID))
                     .andExpect(status().is2xxSuccessful())
                     .andReturn().getResponse().getContentAsString();
 
@@ -105,7 +105,7 @@ class ArticleControllerIntegrationTest {
         @DisplayName("should return a created success status on the happy path")
         void should_return_a_created_success_status_on_the_happy_path() throws Exception {
             mockMvc.perform(
-                    post("/api/articles")
+                    post("/articles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(loadResource("article/api/create_article_request.json"))
             ).andExpect(status().isCreated());
@@ -120,7 +120,7 @@ class ArticleControllerIntegrationTest {
         void should_return_a_not_found_status_code_when_the_category_id_does_not_exist() throws Exception {
             when(articleCreator.create(any())).thenThrow(CategoryNotFoundException.class);
             mockMvc.perform(
-                    post("/api/articles")
+                    post("/articles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(loadResource("article/api/create_article_request.json"))
             ).andExpect(status().isNotFound());
@@ -130,7 +130,7 @@ class ArticleControllerIntegrationTest {
         @DisplayName("should return the newly created article id on the happy path")
         void should_return_the_newly_created_article_id_on_the_happy_path() throws Exception {
             String response = mockMvc.perform(
-                    post("/api/articles")
+                    post("/articles")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(loadResource("article/api/create_article_request.json"))
             ).andReturn().getResponse().getContentAsString();

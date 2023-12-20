@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("api/categories")
+@RequestMapping("categories")
 public interface CategoryApi {
 
     @GetMapping

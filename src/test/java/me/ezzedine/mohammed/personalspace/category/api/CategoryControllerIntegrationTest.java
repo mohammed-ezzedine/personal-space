@@ -58,13 +58,13 @@ class CategoryControllerIntegrationTest {
         @Test
         @DisplayName("it should return a success status")
         void it_should_return_a_success_status() throws Exception {
-            mockMvc.perform(get("/api/categories")).andExpect(status().is2xxSuccessful());
+            mockMvc.perform(get("/categories")).andExpect(status().is2xxSuccessful());
         }
 
         @Test
         @DisplayName("it should return the data with the correct format")
         void it_should_return_the_data_with_the_correct_format() throws Exception {
-            String response = mockMvc.perform(get("/api/categories")).andReturn().getResponse().getContentAsString();
+            String response = mockMvc.perform(get("/categories")).andReturn().getResponse().getContentAsString();
             String resource = loadResource("category/api/category_summary_list.json");
             assertEquals(resource, response);
         }
@@ -83,7 +83,7 @@ class CategoryControllerIntegrationTest {
         @Test
         @DisplayName("it should return a created status code on success")
         void it_should_return_a_created_status_code_on_success() throws Exception {
-            mockMvc.perform(post("/api/categories")
+            mockMvc.perform(post("/categories")
                             .content(loadResource("category/api/create_category_request.json"))
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isCreated());
@@ -93,7 +93,7 @@ class CategoryControllerIntegrationTest {
         @DisplayName("it should return the created category id and order in the response")
         void it_should_return_the_created_category_id_and_order_in_the_response() throws Exception {
             String response = mockMvc
-                    .perform(post("/api/categories")
+                    .perform(post("/categories")
                             .content(loadResource("category/api/create_category_request.json"))
                             .contentType(MediaType.APPLICATION_JSON))
                     .andReturn().getResponse().getContentAsString();
@@ -107,7 +107,7 @@ class CategoryControllerIntegrationTest {
         void should_return_a_bad_request_with_the_reasons_of_failure_when_the_name_is_not_valid() throws Exception {
             when(persister.persist(any())).thenThrow(new CategoryValidationViolationException(List.of("firstReason", "secondReason")));
 
-            String response = mockMvc.perform(post("/api/categories")
+            String response = mockMvc.perform(post("/categories")
                             .content(loadResource("category/api/create_category_request.json"))
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest())
@@ -122,7 +122,7 @@ class CategoryControllerIntegrationTest {
         void should_return_a_conflict_status_code_when_another_category_with_a_similar_id_already_exists() throws Exception {
             when(persister.persist(any())).thenThrow(new CategoryIdAlreadyExistsException("categoryName"));
 
-            String response = mockMvc.perform(post("/api/categories")
+            String response = mockMvc.perform(post("/categories")
                             .content(loadResource("category/api/create_category_request.json"))
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isConflict())
@@ -141,7 +141,7 @@ class CategoryControllerIntegrationTest {
         @DisplayName("should return a success status upon successfully updating the orders")
         void should_return_a_success_status_upon_successfully_updating_the_orders() throws Exception {
             mockMvc.perform(
-                    put("/api/categories/orders")
+                    put("/categories/orders")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(loadResource("category/api/update_orders_request.json"))
             ).andExpect(status().is2xxSuccessful());
