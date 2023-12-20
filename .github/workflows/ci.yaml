@@ -20,11 +20,6 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-#      - name: Build
-#        uses: gradle/gradle-build-action@v2
-#        with:
-#          arguments: build -i
-
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
         id: setup-gradle
@@ -39,3 +34,17 @@ jobs:
 
       - name: Integration Tests
         run: gradle runIntegrationTests -i
+
+      - name: Build Image
+        run: docker build -t maezzedine/personal-space:latest -t maezzedine/personal-space:${{ github.run_number }} .
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        if: github.event_name == 'push'
+        with:
+          username: maezzedine
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Publish Images
+        if: github.event_name == 'push'
+        run: docker push maezzedine/personal-space --all-tags
