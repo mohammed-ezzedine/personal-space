@@ -1,6 +1,7 @@
 package me.ezzedine.mohammed.personalspace.category.api;
 
 import me.ezzedine.mohammed.personalspace.category.api.advice.CategoryIdAlreadyExistsAdvice;
+import me.ezzedine.mohammed.personalspace.category.api.advice.CategoryNotFoundAdvice;
 import me.ezzedine.mohammed.personalspace.category.api.advice.CategoryValidationViolationAdvice;
 import me.ezzedine.mohammed.personalspace.category.core.*;
 import me.ezzedine.mohammed.personalspace.category.core.UpdateCategoriesOrdersRequest.CategoryOrder;
@@ -22,6 +23,7 @@ import static me.ezzedine.mohammed.personalspace.TestUtils.loadResource;
 import static me.ezzedine.mohammed.personalspace.TestUtils.loadResourceWithWhiteSpaces;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -30,7 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = {
         CategoryController.class,
         CategoryValidationViolationAdvice.class,
-        CategoryIdAlreadyExistsAdvice.class
+        CategoryIdAlreadyExistsAdvice.class,
+        CategoryNotFoundAdvice.class
 })
 @EnableWebMvc
 @AutoConfigureMockMvc
@@ -68,7 +71,29 @@ class CategoryControllerIntegrationTest {
             String resource = loadResource("category/api/category_summary_list.json");
             assertEquals(resource, response);
         }
+    }
 
+    @Nested
+    @DisplayName("When fetching the details of a category")
+    class FetchingCategoryDetailsIntegrationTest {
+        @Test
+        @DisplayName("the user should get the category details on the happy path")
+        void the_user_should_get_the_category_details_on_the_happy_path() throws Exception {
+            when(fetcher.fetch("categoryId")).thenReturn(Category.builder().id("categoryId").name("categoryName").order(3).build());
+            String response = mockMvc.perform(get("/categories/categoryId"))
+                    .andExpect(status().is2xxSuccessful())
+                    .andReturn().getResponse().getContentAsString();
+            String resource = loadResource("category/api/category_details_response.json");
+            assertEquals(resource, response);
+        }
+
+        @Test
+        @DisplayName("the user should get a not found status code when the category does not exist")
+        void the_user_should_get_a_not_found_status_code_when_the_category_does_not_exist() throws Exception {
+            when(fetcher.fetch(anyString())).thenThrow(CategoryNotFoundException.class);
+            mockMvc.perform(get("/categories/categoryId"))
+                    .andExpect(status().isNotFound());
+        }
     }
 
     @Nested

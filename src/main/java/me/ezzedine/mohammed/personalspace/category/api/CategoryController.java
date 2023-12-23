@@ -25,6 +25,13 @@ public class CategoryController implements CategoryApi {
     }
 
     @Override
+    public ResponseEntity<CategorySummaryApiModel> fetchCategoryDetails(String id) throws CategoryNotFoundException {
+        log.info("Received a request to fetch the details of the category of ID {}", id);
+        Category category = fetcher.fetch(id);
+        return ResponseEntity.ok(toApiModel(category));
+    }
+
+    @Override
     public ResponseEntity<CategoryCreationResultApiModel> create(CategoryCreationRequest request) throws CategoryValidationViolationException, CategoryIdAlreadyExistsException {
         log.info("Received a request to create a new category {}", request);
         CategoryCreationResult creationResult = persister.persist(PersistCategoryRequest.builder().name(request.getName()).build());
