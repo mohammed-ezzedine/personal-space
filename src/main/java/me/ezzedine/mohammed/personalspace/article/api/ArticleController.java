@@ -50,16 +50,18 @@ public class ArticleController implements ArticleApi {
     }
 
     private static ArticleUpdateRequest toDomainModel(String id, ArticleUpdateApiRequest request) {
-        return ArticleUpdateRequest.builder().id(id).title(request.getTitle()).description(request.getDescription()).content(request.getContent()).categoryId(request.getCategoryId()).build();
+        return ArticleUpdateRequest.builder().id(id).title(request.getTitle()).description(request.getDescription())
+                .content(request.getContent()).categoryId(request.getCategoryId()).thumbnailImageUrl(request.getThumbnailImageUrl()).build();
     }
 
     private static ArticleApiModel toApiModel(Article article) {
         return ArticleApiModel.builder().id(article.getId()).title(article.getTitle()).description(article.getDescription())
-                .content(article.getContent()).categoryId(article.getCategoryId()).build();
+                .content(article.getContent()).categoryId(article.getCategoryId()).thumbnailImageUrl(article.getThumbnailImageUrl()).build();
     }
 
     private static ArticleCreationRequest toDomainModel(ArticleCreationApiRequest request) {
         return ArticleCreationRequest.builder().title(request.getTitle()).content(request.getContent())
-                .description(request.getDescription()).categoryId(request.getCategoryId()).build();
+                .description(request.getDescription()).categoryId(request.getCategoryId())
+                .thumbnailImageUrl(request.getThumbnailImageUrl()).build();
     }
 }

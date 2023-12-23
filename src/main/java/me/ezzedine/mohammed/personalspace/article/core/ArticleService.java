@@ -47,6 +47,7 @@ public class ArticleService implements ArticleCreator, ArticleFetcher, ArticleEd
         request.getDescription().ifPresent(article::setDescription);
         request.getCategoryId().ifPresent(article::setCategoryId);
         request.getContent().ifPresent(article::setContent);
+        request.getThumbnailImageUrl().ifPresent(article::setThumbnailImageUrl);
 
         storage.save(article);
     }
@@ -58,7 +59,7 @@ public class ArticleService implements ArticleCreator, ArticleFetcher, ArticleEd
     private String saveArticleInStorage(ArticleCreationRequest request) {
         String articleId = idGenerator.generate();
         Article article = Article.builder().id(articleId).content(request.getContent()).categoryId(request.getCategoryId())
-                .description(request.getDescription()).title(request.getTitle()).build();
+                .description(request.getDescription()).title(request.getTitle()).thumbnailImageUrl(request.getThumbnailImageUrl()).build();
         storage.save(article);
         return articleId;
     }

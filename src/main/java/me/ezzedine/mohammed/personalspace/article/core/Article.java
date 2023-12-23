@@ -17,4 +17,5 @@ public class Article {
     private String description;
     @NonNull
     private String content;
+    private String thumbnailImageUrl;
 }

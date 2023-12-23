@@ -14,4 +14,5 @@ public class ArticleUpdateApiRequest {
     private String title;
     private String description;
     private String content;
+    private String thumbnailImageUrl;
 }

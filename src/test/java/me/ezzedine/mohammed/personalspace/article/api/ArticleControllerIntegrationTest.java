@@ -39,6 +39,7 @@ class ArticleControllerIntegrationTest {
     public static final String DESCRIPTION = "articleDescription";
     public static final String CONTENT = "articleContent";
     public static final String CATEGORY_ID = "articleCategoryId";
+    public static final String ARTICLE_THUMBNAIL_IMAGE_URL = "articleThumbnailImageUrl";
     @Autowired
     private MockMvc mockMvc;
 
@@ -112,7 +113,7 @@ class ArticleControllerIntegrationTest {
             ).andExpect(status().isCreated());
 
             ArticleCreationRequest request = ArticleCreationRequest.builder().title(TITLE).description(DESCRIPTION)
-                    .content(CONTENT).categoryId(CATEGORY_ID).build();
+                    .content(CONTENT).categoryId(CATEGORY_ID).thumbnailImageUrl(ARTICLE_THUMBNAIL_IMAGE_URL).build();
             verify(articleCreator).create(request);
         }
 
@@ -153,7 +154,8 @@ class ArticleControllerIntegrationTest {
             ).andExpect(status().is2xxSuccessful());
 
             ArticleUpdateRequest request = ArticleUpdateRequest.builder().id(ARTICLE_ID).title("updatedArticleTitle")
-                    .categoryId("updatedArticleCategoryId").content("updatedArticleContent").description("updatedArticleDescription").build();
+                    .categoryId("updatedArticleCategoryId").content("updatedArticleContent").description("updatedArticleDescription")
+                    .thumbnailImageUrl("updatedArticleThumbnailImageUrl").build();
             verify(articleEditor).edit(request);
         }
 
@@ -183,6 +185,7 @@ class ArticleControllerIntegrationTest {
     }
 
     private Article getArticle() {
-        return Article.builder().id(ARTICLE_ID).title(TITLE).description(DESCRIPTION).content(CONTENT).categoryId(CATEGORY_ID).build();
+        return Article.builder().id(ARTICLE_ID).title(TITLE).description(DESCRIPTION).content(CONTENT)
+                .categoryId(CATEGORY_ID).thumbnailImageUrl(ARTICLE_THUMBNAIL_IMAGE_URL).build();
     }
 }

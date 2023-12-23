@@ -3,5 +3,6 @@
   "title": "articleTitle",
   "description": "articleDescription",
   "content": "articleContent",
-  "categoryId": "articleCategoryId"
+  "categoryId": "articleCategoryId",
+  "thumbnailImageUrl": "articleThumbnailImageUrl"
 }

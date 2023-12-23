@@ -15,4 +15,5 @@ public class ArticleCreationApiRequest {
     private String content;
     @NonNull
     private String categoryId;
+    private String thumbnailImageUrl;
 }

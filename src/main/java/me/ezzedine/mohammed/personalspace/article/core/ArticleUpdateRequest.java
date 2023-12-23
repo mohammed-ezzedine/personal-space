@@ -13,6 +13,7 @@ public class ArticleUpdateRequest {
     private String categoryId;
     private String description;
     private String content;
+    private String thumbnailImageUrl;
 
     public Optional<String> getTitle() {
         return Optional.ofNullable(title);
@@ -28,5 +29,9 @@ public class ArticleUpdateRequest {
 
     public Optional<String> getContent() {
         return Optional.ofNullable(content);
+    }
+
+    public Optional<String> getThumbnailImageUrl() {
+        return Optional.ofNullable(thumbnailImageUrl);
     }
 }

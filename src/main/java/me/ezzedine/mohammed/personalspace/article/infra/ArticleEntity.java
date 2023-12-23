@@ -17,4 +17,5 @@ public class ArticleEntity {
     private String description;
     private String content;
     private String categoryId;
+    private String thumbnailImageUrl;
 }

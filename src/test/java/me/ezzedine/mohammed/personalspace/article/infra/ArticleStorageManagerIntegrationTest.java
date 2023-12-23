@@ -27,6 +27,7 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
     public static final String TITLE = UUID.randomUUID().toString();
     public static final String DESCRIPTION = UUID.randomUUID().toString();
     public static final String CONTENT = UUID.randomUUID().toString();
+    public static final String THUMBNAIL_IMAGE_URL = UUID.randomUUID().toString();
     @Autowired
     private ArticleMongoRepository repository;
 
@@ -78,7 +79,8 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
         }
 
         private Article getArticle() {
-            return Article.builder().id(ID).categoryId(CATEGORY_ID).title(TITLE).description(DESCRIPTION).content(CONTENT).build();
+            return Article.builder().id(ID).categoryId(CATEGORY_ID).title(TITLE).description(DESCRIPTION).content(CONTENT)
+                    .thumbnailImageUrl(THUMBNAIL_IMAGE_URL).build();
         }
     }
 
@@ -132,6 +134,6 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
 
     private ArticleEntity getEntity() {
         return ArticleEntity.builder().id(ID).categoryId(CATEGORY_ID).title(TITLE).description(DESCRIPTION)
-                .content(CONTENT).build();
+                .content(CONTENT).thumbnailImageUrl(THUMBNAIL_IMAGE_URL).build();
     }
 }

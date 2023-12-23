@@ -10,4 +10,5 @@ public class ArticleCreationRequest {
     private String categoryId;
     private String description;
     private String content;
+    private String thumbnailImageUrl;
 }
