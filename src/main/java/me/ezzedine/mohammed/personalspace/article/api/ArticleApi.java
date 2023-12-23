@@ -18,4 +18,7 @@ public interface ArticleApi {
 
     @PostMapping
     ResponseEntity<ArticleCreationApiResponse> create(@RequestBody ArticleCreationApiRequest request) throws CategoryNotFoundException;
+
+    @PutMapping("{id}")
+    ResponseEntity<Void> editArticle(@PathVariable String id, @RequestBody ArticleUpdateApiRequest request) throws CategoryNotFoundException, ArticleNotFoundException;
 }

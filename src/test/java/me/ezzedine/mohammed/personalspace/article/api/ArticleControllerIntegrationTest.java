@@ -21,10 +21,8 @@ import java.util.List;
 import static me.ezzedine.mohammed.personalspace.TestUtils.loadResource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = {
@@ -49,6 +47,9 @@ class ArticleControllerIntegrationTest {
 
     @MockBean
     private ArticleFetcher articleFetcher;
+
+    @MockBean
+    private ArticleEditor articleEditor;
 
     @Nested
     @DisplayName("When fetching the details of all articles")
@@ -136,6 +137,48 @@ class ArticleControllerIntegrationTest {
             ).andReturn().getResponse().getContentAsString();
 
             assertEquals(loadResource("article/api/article_creation_response.json"), response);
+        }
+    }
+
+    @Nested
+    @DisplayName("When editing an article")
+    class EditingArticleIntegrationTest {
+        @Test
+        @DisplayName("should return a success status on the happy path")
+        void should_return_a_success_status_on_the_happy_path() throws Exception {
+            mockMvc.perform(
+                    put("/articles/{id}", ARTICLE_ID)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(loadResource("article/api/edit_article_request.json"))
+            ).andExpect(status().is2xxSuccessful());
+
+            ArticleUpdateRequest request = ArticleUpdateRequest.builder().id(ARTICLE_ID).title("updatedArticleTitle")
+                    .categoryId("updatedArticleCategoryId").content("updatedArticleContent").description("updatedArticleDescription").build();
+            verify(articleEditor).edit(request);
+        }
+
+        @Test
+        @DisplayName("should return a not found status when the article does not exist")
+        void should_return_a_not_found_status_when_the_article_does_not_exist() throws Exception {
+            doThrow(ArticleNotFoundException.class).when(articleEditor).edit(any());
+
+            mockMvc.perform(
+                    put("/articles/{id}", ARTICLE_ID)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(loadResource("article/api/edit_article_request.json"))
+            ).andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("should return a not found status when the chosen category does not exist")
+        void should_return_a_not_found_status_when_the_chosen_category_does_not_exist() throws Exception {
+            doThrow(CategoryNotFoundException.class).when(articleEditor).edit(any());
+
+            mockMvc.perform(
+                    put("/articles/{id}", ARTICLE_ID)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(loadResource("article/api/edit_article_request.json"))
+            ).andExpect(status().isNotFound());
         }
     }
 

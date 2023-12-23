@@ -19,9 +19,13 @@ import static org.mockito.Mockito.*;
 class ArticleServiceTest {
 
     public static final String CATEGORY_ID = UUID.randomUUID().toString();
+    public static final String UPDATED_CATEGORY_ID = UUID.randomUUID().toString();
     public static final String TITLE = UUID.randomUUID().toString();
+    public static final String UPDATED_TITLE = UUID.randomUUID().toString();
     public static final String CONTENT = UUID.randomUUID().toString();
+    public static final String UPDATED_CONTENT = UUID.randomUUID().toString();
     public static final String DESCRIPTION = UUID.randomUUID().toString();
+    public static final String UPDATED_DESCRIPTION = UUID.randomUUID().toString();
     public static final String ARTICLE_ID = UUID.randomUUID().toString();
     private ArticleStorage storage;
     private ArticleService service;
@@ -127,6 +131,40 @@ class ArticleServiceTest {
             List<Article> articles = service.fetchAll();
             assertEquals(1, articles.size());
             assertEquals(article, articles.get(0));
+        }
+    }
+
+    @Nested
+    @DisplayName("When editing an existing article")
+    class EditingArticleTest {
+
+        @Test
+        @DisplayName("the user should not be able to select a category that does not exist")
+        void the_user_should_not_be_able_to_select_a_category_that_does_not_exist() throws CategoryNotFoundException {
+            when(categoryFetcher.fetch(any())).thenThrow(CategoryNotFoundException.class);
+            assertThrows(CategoryNotFoundException.class, () -> service.edit(getRequest()));
+        }
+
+        @Test
+        @DisplayName("the user should not be able to edit an article that does not exist")
+        void the_user_should_not_be_able_to_edit_an_article_that_does_not_exist() {
+            when(storage.fetch(ARTICLE_ID)).thenReturn(Optional.empty());
+            assertThrows(ArticleNotFoundException.class, () -> service.edit(getRequest()));
+        }
+
+        @Test
+        @DisplayName("the new changes should be saved successfully on the happy path")
+        void the_new_changes_should_be_saved_successfully_on_the_happy_path() throws ArticleNotFoundException, CategoryNotFoundException {
+            when(storage.fetch(ARTICLE_ID)).thenReturn(Optional.of(getArticle()));
+            service.edit(getRequest());
+            Article updatedArticle = Article.builder().id(ARTICLE_ID).categoryId(UPDATED_CATEGORY_ID).title(UPDATED_TITLE)
+                    .content(UPDATED_CONTENT).description(UPDATED_DESCRIPTION).build();
+            verify(storage).save(updatedArticle);
+        }
+
+        private static ArticleUpdateRequest getRequest() {
+            return ArticleUpdateRequest.builder().id(ARTICLE_ID).categoryId(UPDATED_CATEGORY_ID).title(UPDATED_TITLE)
+                    .content(UPDATED_CONTENT).description(UPDATED_DESCRIPTION).build();
         }
     }
 

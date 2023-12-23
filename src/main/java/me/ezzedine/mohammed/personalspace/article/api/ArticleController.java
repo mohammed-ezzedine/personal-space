@@ -17,6 +17,7 @@ public class ArticleController implements ArticleApi {
 
     private final ArticleCreator articleCreator;
     private final ArticleFetcher articleFetcher;
+    private final ArticleEditor articleEditor;
 
     @Override
     public ResponseEntity<List<ArticleApiModel>> getArticles() {
@@ -39,6 +40,17 @@ public class ArticleController implements ArticleApi {
         ArticleCreationResult result = articleCreator.create(toDomainModel(request));
         ArticleCreationApiResponse response = ArticleCreationApiResponse.builder().id(result.getId()).build();
         return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(response);
+    }
+
+    @Override
+    public ResponseEntity<Void> editArticle(String id, ArticleUpdateApiRequest request) throws CategoryNotFoundException, ArticleNotFoundException {
+        log.info("Received a request to edit article with ID {}", id);
+        articleEditor.edit(toDomainModel(id, request));
+        return ResponseEntity.ok().build();
+    }
+
+    private static ArticleUpdateRequest toDomainModel(String id, ArticleUpdateApiRequest request) {
+        return ArticleUpdateRequest.builder().id(id).title(request.getTitle()).description(request.getDescription()).content(request.getContent()).categoryId(request.getCategoryId()).build();
     }
 
     private static ArticleApiModel toApiModel(Article article) {
