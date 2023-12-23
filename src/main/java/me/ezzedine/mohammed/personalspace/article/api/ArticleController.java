@@ -4,11 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.ezzedine.mohammed.personalspace.article.core.*;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryNotFoundException;
+import me.ezzedine.mohammed.personalspace.util.pagination.FetchCriteria;
+import me.ezzedine.mohammed.personalspace.util.pagination.Page;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -20,11 +24,17 @@ public class ArticleController implements ArticleApi {
     private final ArticleEditor articleEditor;
 
     @Override
-    public ResponseEntity<List<ArticleApiModel>> getArticles() {
-        log.info("Received a request to fetch the article details");
-        List<Article> articles = articleFetcher.fetchAll();
-        List<ArticleApiModel> response = articles.stream().map(ArticleController::toApiModel).toList();
-        return ResponseEntity.ok(response);
+    public ResponseEntity<Page<ArticleApiModel>> getArticles(Optional<Integer> page, Optional<Integer> size) {
+        log.info("Received a request to fetch the article details of page {} and page size {}", page, size);
+        Page<Article> articlesPage = articleFetcher.fetchAll(getFetchCriteria(page, size));
+        List<ArticleApiModel> articlesApiModels = articlesPage.getItems().stream()
+                .map(ArticleController::toApiModel).collect(Collectors.toList());
+        Page<ArticleApiModel> articlesApiModelPage = Page.<ArticleApiModel>builder().totalSize(articlesPage.getTotalSize()).items(articlesApiModels).build();
+        return ResponseEntity.ok(articlesApiModelPage);
+    }
+
+    private static FetchCriteria getFetchCriteria(Optional<Integer> page, Optional<Integer> size) {
+        return FetchCriteria.builder().startingPageIndex(page.orElse(0)).maximumPageSize(size.orElse(10)).build();
     }
 
     @Override

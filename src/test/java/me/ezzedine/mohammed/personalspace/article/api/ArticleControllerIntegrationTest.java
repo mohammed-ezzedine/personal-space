@@ -4,6 +4,8 @@ import me.ezzedine.mohammed.personalspace.article.api.advice.ArticleNotFoundAdvi
 import me.ezzedine.mohammed.personalspace.article.core.*;
 import me.ezzedine.mohammed.personalspace.category.api.advice.CategoryNotFoundAdvice;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryNotFoundException;
+import me.ezzedine.mohammed.personalspace.util.pagination.FetchCriteria;
+import me.ezzedine.mohammed.personalspace.util.pagination.Page;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -59,7 +61,23 @@ class ArticleControllerIntegrationTest {
         @Test
         @DisplayName("should return a success status code with the details of the articles")
         void should_return_a_success_status_code_with_the_details_of_the_articles() throws Exception {
-            when(articleFetcher.fetchAll()).thenReturn(List.of(getArticle()));
+            Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
+            when(articleFetcher.fetchAll(FetchCriteria.builder().maximumPageSize(13).startingPageIndex(2).build())).thenReturn(page);
+
+            String response = mockMvc.perform(get("/articles")
+                                                .param("page", "2")
+                                                .param("size", "13"))
+                    .andExpect(status().is2xxSuccessful())
+                    .andReturn().getResponse().getContentAsString();
+
+            assertEquals(loadResource("article/api/all_articles_details_response.json"), response);
+        }
+
+        @Test
+        @DisplayName("should fetch the first 10 articles if the user did not specify")
+        void should_fetch_the_first_10_articles_if_the_user_did_not_specify() throws Exception {
+            Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
+            when(articleFetcher.fetchAll(FetchCriteria.builder().maximumPageSize(10).startingPageIndex(0).build())).thenReturn(page);
 
             String response = mockMvc.perform(get("/articles"))
                     .andExpect(status().is2xxSuccessful())

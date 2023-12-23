@@ -3,9 +3,10 @@ package me.ezzedine.mohammed.personalspace.article.core;
 import lombok.RequiredArgsConstructor;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryFetcher;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryNotFoundException;
+import me.ezzedine.mohammed.personalspace.util.pagination.FetchCriteria;
+import me.ezzedine.mohammed.personalspace.util.pagination.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -17,8 +18,8 @@ public class ArticleService implements ArticleCreator, ArticleFetcher, ArticleEd
     private final ArticleIdGenerator idGenerator;
 
     @Override
-    public List<Article> fetchAll() {
-        return storage.fetchAll();
+    public Page<Article> fetchAll(FetchCriteria criteria) {
+        return storage.fetchAll(criteria);
     }
 
     @Override

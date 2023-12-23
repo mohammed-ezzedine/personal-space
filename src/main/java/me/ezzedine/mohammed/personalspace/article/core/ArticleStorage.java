@@ -1,10 +1,12 @@
 package me.ezzedine.mohammed.personalspace.article.core;
 
-import java.util.List;
+import me.ezzedine.mohammed.personalspace.util.pagination.FetchCriteria;
+import me.ezzedine.mohammed.personalspace.util.pagination.Page;
+
 import java.util.Optional;
 
 public interface ArticleStorage {
     void save(Article article);
     Optional<Article> fetch(String id);
-    List<Article> fetchAll();
+    Page<Article> fetchAll(FetchCriteria criteria);
 }

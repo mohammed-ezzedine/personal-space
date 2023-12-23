@@ -3,6 +3,8 @@ package me.ezzedine.mohammed.personalspace.article.infra;
 import lombok.RequiredArgsConstructor;
 import me.ezzedine.mohammed.personalspace.article.core.Article;
 import me.ezzedine.mohammed.personalspace.article.core.ArticleStorage;
+import me.ezzedine.mohammed.personalspace.util.pagination.FetchCriteria;
+import me.ezzedine.mohammed.personalspace.util.pagination.Page;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,8 +27,15 @@ public class ArticleStorageManager implements ArticleStorage {
     }
 
     @Override
-    public List<Article> fetchAll() {
-        return repository.findAll().stream().map(ArticleStorageManager::fromEntity).toList();
+    public Page<Article> fetchAll(FetchCriteria criteria) {
+        long numberOfSkippedArticles = (long) criteria.getStartingPageIndex() * criteria.getMaximumPageSize();
+        long totalNumberOfArticles = repository.count();
+        List<Article> articles = repository.findAll().stream()
+                .skip(numberOfSkippedArticles)
+                .limit(criteria.getMaximumPageSize())
+                .map(ArticleStorageManager::fromEntity)
+                .toList();
+        return Page.<Article>builder().items(articles).totalSize(totalNumberOfArticles).build();
     }
 
     private static ArticleEntity toEntity(Article article) {

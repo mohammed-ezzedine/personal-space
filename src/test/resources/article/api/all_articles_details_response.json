@@ -1,11 +1,14 @@
-[
-  {
-    "id": "articleId",
-    "title": "articleTitle",
-    "description": "articleDescription",
-    "content": "articleContent",
-    "categoryId": "articleCategoryId",
-    "thumbnailImageUrl": "articleThumbnailImageUrl",
-    "keywords": ["keyword"]
-  }
-]
+{
+  "totalSize": 14,
+  "items": [
+    {
+      "id": "articleId",
+      "title": "articleTitle",
+      "description": "articleDescription",
+      "content": "articleContent",
+      "categoryId": "articleCategoryId",
+      "thumbnailImageUrl": "articleThumbnailImageUrl",
+      "keywords": ["keyword"]
+    }
+  ]
+}

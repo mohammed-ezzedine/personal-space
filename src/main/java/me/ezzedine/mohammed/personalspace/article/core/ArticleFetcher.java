@@ -1,8 +1,9 @@
 package me.ezzedine.mohammed.personalspace.article.core;
 
-import java.util.List;
+import me.ezzedine.mohammed.personalspace.util.pagination.FetchCriteria;
+import me.ezzedine.mohammed.personalspace.util.pagination.Page;
 
 public interface ArticleFetcher {
     Article fetch(String id) throws ArticleNotFoundException;
-    List<Article> fetchAll();
+    Page<Article> fetchAll(FetchCriteria criteria);
 }
