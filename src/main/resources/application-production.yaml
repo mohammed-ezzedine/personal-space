@@ -11,6 +11,7 @@ security:
   require-ssl: ${SSL_ENABLED:false}
 
 server:
+  forward-headers-strategy: native
   ssl:
     key-store: ${SSL_KEY_STORE_PATH:}
     key-store-password: ${SSL_KEY_STORE_PASSWORD:}
