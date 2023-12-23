@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document
 @Builder
 @Data
@@ -18,4 +20,5 @@ public class ArticleEntity {
     private String content;
     private String categoryId;
     private String thumbnailImageUrl;
+    private List<String> keywords;
 }

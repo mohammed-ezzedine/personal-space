@@ -3,5 +3,6 @@
   "description": "updatedArticleDescription",
   "content": "updatedArticleContent",
   "categoryId": "updatedArticleCategoryId",
-  "thumbnailImageUrl": "updatedArticleThumbnailImageUrl"
+  "thumbnailImageUrl": "updatedArticleThumbnailImageUrl",
+  "keywords": ["updatedArticleKeyword"]
 }

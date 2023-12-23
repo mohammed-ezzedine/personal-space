@@ -28,6 +28,7 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
     public static final String DESCRIPTION = UUID.randomUUID().toString();
     public static final String CONTENT = UUID.randomUUID().toString();
     public static final String THUMBNAIL_IMAGE_URL = UUID.randomUUID().toString();
+    public static final String KEYWORD = UUID.randomUUID().toString();
     @Autowired
     private ArticleMongoRepository repository;
 
@@ -55,6 +56,8 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(TITLE, allArticles.get(0).getTitle());
             assertEquals(DESCRIPTION, allArticles.get(0).getDescription());
             assertEquals(CONTENT, allArticles.get(0).getContent());
+            assertEquals(THUMBNAIL_IMAGE_URL, allArticles.get(0).getThumbnailImageUrl());
+            assertEquals(List.of(KEYWORD), allArticles.get(0).getKeywords());
         }
 
         @Test
@@ -71,16 +74,19 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(TITLE, allArticles.get(0).getTitle());
             assertEquals(DESCRIPTION, allArticles.get(0).getDescription());
             assertEquals(CONTENT, allArticles.get(0).getContent());
+            assertEquals(THUMBNAIL_IMAGE_URL, allArticles.get(0).getThumbnailImageUrl());
+            assertEquals(List.of(KEYWORD), allArticles.get(0).getKeywords());
         }
 
         private static ArticleEntity getRandomArticleEntity() {
             return ArticleEntity.builder().id(ID).title(UUID.randomUUID().toString()).categoryId(UUID.randomUUID().toString())
-                    .content(UUID.randomUUID().toString()).description(UUID.randomUUID().toString()).build();
+                    .content(UUID.randomUUID().toString()).description(UUID.randomUUID().toString()).thumbnailImageUrl(UUID.randomUUID().toString())
+                    .keywords(List.of(UUID.randomUUID().toString())).build();
         }
 
         private Article getArticle() {
             return Article.builder().id(ID).categoryId(CATEGORY_ID).title(TITLE).description(DESCRIPTION).content(CONTENT)
-                    .thumbnailImageUrl(THUMBNAIL_IMAGE_URL).build();
+                    .thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).build();
         }
     }
 
@@ -106,6 +112,8 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(CONTENT, optionalArticle.get().getContent());
             assertEquals(TITLE, optionalArticle.get().getTitle());
             assertEquals(CATEGORY_ID, optionalArticle.get().getCategoryId());
+            assertEquals(THUMBNAIL_IMAGE_URL, optionalArticle.get().getThumbnailImageUrl());
+            assertEquals(List.of(KEYWORD), optionalArticle.get().getKeywords());
         }
     }
 
@@ -129,11 +137,13 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(DESCRIPTION, articles.get(0).getDescription());
             assertEquals(CONTENT, articles.get(0).getContent());
             assertEquals(CATEGORY_ID, articles.get(0).getCategoryId());
+            assertEquals(THUMBNAIL_IMAGE_URL, articles.get(0).getThumbnailImageUrl());
+            assertEquals(List.of(KEYWORD), articles.get(0).getKeywords());
         }
     }
 
     private ArticleEntity getEntity() {
         return ArticleEntity.builder().id(ID).categoryId(CATEGORY_ID).title(TITLE).description(DESCRIPTION)
-                .content(CONTENT).thumbnailImageUrl(THUMBNAIL_IMAGE_URL).build();
+                .content(CONTENT).thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).build();
     }
 }

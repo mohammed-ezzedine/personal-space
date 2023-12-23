@@ -4,6 +4,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @Builder
 public class Article {
@@ -18,4 +21,6 @@ public class Article {
     @NonNull
     private String content;
     private String thumbnailImageUrl;
+    @Builder.Default
+    private List<String> keywords = new ArrayList<>();
 }

@@ -3,6 +3,7 @@ package me.ezzedine.mohammed.personalspace.article.core;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Optional;
 
 @Data
@@ -14,6 +15,7 @@ public class ArticleUpdateRequest {
     private String description;
     private String content;
     private String thumbnailImageUrl;
+    private List<String> keywords;
 
     public Optional<String> getTitle() {
         return Optional.ofNullable(title);
@@ -33,5 +35,9 @@ public class ArticleUpdateRequest {
 
     public Optional<String> getThumbnailImageUrl() {
         return Optional.ofNullable(thumbnailImageUrl);
+    }
+
+    public Optional<List<String>> getKeywords() {
+        return Optional.ofNullable(keywords);
     }
 }

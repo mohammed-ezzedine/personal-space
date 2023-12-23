@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -15,4 +17,5 @@ public class ArticleUpdateApiRequest {
     private String description;
     private String content;
     private String thumbnailImageUrl;
+    private List<String> keywords;
 }

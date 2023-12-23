@@ -2,6 +2,8 @@ package me.ezzedine.mohammed.personalspace.article.api;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,4 +18,6 @@ public class ArticleCreationApiRequest {
     @NonNull
     private String categoryId;
     private String thumbnailImageUrl;
+    @NonNull
+    private List<String> keywords;
 }

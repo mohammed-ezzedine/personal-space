@@ -29,6 +29,8 @@ class ArticleServiceTest {
     public static final String ARTICLE_ID = UUID.randomUUID().toString();
     public static final String THUMBNAIL_IMAGE_URL = UUID.randomUUID().toString();
     public static final String UPDATED_THUMBNAIL_IMAGE_URL = UUID.randomUUID().toString();
+    public static final String KEYWORD = UUID.randomUUID().toString();
+    public static final String UPDATED_KEYWORD = UUID.randomUUID().toString();
     private ArticleStorage storage;
     private ArticleService service;
     private CategoryFetcher categoryFetcher;
@@ -80,6 +82,7 @@ class ArticleServiceTest {
             assertEquals(CONTENT, argumentCaptor.getValue().getContent());
             assertEquals(DESCRIPTION, argumentCaptor.getValue().getDescription());
             assertEquals(THUMBNAIL_IMAGE_URL, argumentCaptor.getValue().getThumbnailImageUrl());
+            assertEquals(List.of(KEYWORD), argumentCaptor.getValue().getKeywords());
         }
 
         @Test
@@ -91,7 +94,7 @@ class ArticleServiceTest {
 
         private static ArticleCreationRequest getRequest() {
             return ArticleCreationRequest.builder().categoryId(CATEGORY_ID).title(TITLE).content(CONTENT).description(DESCRIPTION)
-                    .thumbnailImageUrl(THUMBNAIL_IMAGE_URL).build();
+                    .thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).build();
         }
     }
 
@@ -121,6 +124,7 @@ class ArticleServiceTest {
             assertEquals(CONTENT, article.getContent());
             assertEquals(CATEGORY_ID, article.getCategoryId());
             assertEquals(THUMBNAIL_IMAGE_URL, article.getThumbnailImageUrl());
+            assertEquals(List.of(KEYWORD), article.getKeywords());
         }
     }
 
@@ -163,18 +167,20 @@ class ArticleServiceTest {
             when(storage.fetch(ARTICLE_ID)).thenReturn(Optional.of(getArticle()));
             service.edit(getRequest());
             Article updatedArticle = Article.builder().id(ARTICLE_ID).categoryId(UPDATED_CATEGORY_ID).title(UPDATED_TITLE)
-                    .content(UPDATED_CONTENT).description(UPDATED_DESCRIPTION).thumbnailImageUrl(UPDATED_THUMBNAIL_IMAGE_URL).build();
+                    .content(UPDATED_CONTENT).description(UPDATED_DESCRIPTION).thumbnailImageUrl(UPDATED_THUMBNAIL_IMAGE_URL)
+                    .keywords(List.of(UPDATED_KEYWORD)).build();
             verify(storage).save(updatedArticle);
         }
 
         private static ArticleUpdateRequest getRequest() {
             return ArticleUpdateRequest.builder().id(ARTICLE_ID).categoryId(UPDATED_CATEGORY_ID).title(UPDATED_TITLE)
-                    .content(UPDATED_CONTENT).description(UPDATED_DESCRIPTION).thumbnailImageUrl(UPDATED_THUMBNAIL_IMAGE_URL).build();
+                    .content(UPDATED_CONTENT).description(UPDATED_DESCRIPTION).thumbnailImageUrl(UPDATED_THUMBNAIL_IMAGE_URL)
+                    .keywords(List.of(UPDATED_KEYWORD)).build();
         }
     }
 
     private Article getArticle() {
         return Article.builder().id(ARTICLE_ID).title(TITLE).description(DESCRIPTION).content(CONTENT)
-                .categoryId(CATEGORY_ID).thumbnailImageUrl(THUMBNAIL_IMAGE_URL).build();
+                .categoryId(CATEGORY_ID).thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).build();
     }
 }
