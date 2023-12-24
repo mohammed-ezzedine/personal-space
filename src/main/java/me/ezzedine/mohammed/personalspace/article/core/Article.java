@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,4 +24,7 @@ public class Article {
     private String thumbnailImageUrl;
     @Builder.Default
     private List<String> keywords = new ArrayList<>();
+    private LocalDateTime createdDate;
+    private LocalDateTime lastModifiedDate;
+    private Long version;
 }

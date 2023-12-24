@@ -1,6 +1,7 @@
 package me.ezzedine.mohammed.personalspace.article.infra;
 
 import me.ezzedine.mohammed.personalspace.DatabaseIntegrationTest;
+import me.ezzedine.mohammed.personalspace.MongoConfiguration;
 import me.ezzedine.mohammed.personalspace.article.core.Article;
 import me.ezzedine.mohammed.personalspace.util.pagination.FetchCriteria;
 import me.ezzedine.mohammed.personalspace.util.pagination.Page;
@@ -11,16 +12,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = {
         ArticleStorageManager.class,
-        ArticleMongoRepository.class
+        ArticleMongoRepository.class,
+        MongoConfiguration.class
 })
 class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
 
@@ -63,11 +65,26 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
         }
 
         @Test
+        @DisplayName("the stored article should have the current date as the value for its creation date")
+        void the_stored_article_should_have_the_current_date_as_the_value_for_its_creation_date() {
+            storageManager.save(getArticle());
+
+            List<ArticleEntity> allArticles = repository.findAll();
+            assertEquals(1, allArticles.size());
+            assertNotNull(allArticles.get(0).getCreatedDate());
+            assertEquals(allArticles.get(0).getCreatedDate(), allArticles.get(0).getLastModifiedDate());
+        }
+
+        @Test
         @DisplayName("should override any existing article with the same id")
         void should_override_any_existing_article_with_the_same_id() {
-            repository.save(getRandomArticleEntity());
+            ArticleEntity entity = repository.save(getRandomArticleEntity());
 
-            storageManager.save(getArticle());
+            Article article = getArticle();
+            article.setVersion(entity.getVersion());
+            article.setCreatedDate(entity.getCreatedDate());
+            article.setLastModifiedDate(entity.getLastModifiedDate());
+            storageManager.save(article);
 
             List<ArticleEntity> allArticles = repository.findAll();
             assertEquals(1, allArticles.size());
@@ -78,6 +95,38 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(CONTENT, allArticles.get(0).getContent());
             assertEquals(THUMBNAIL_IMAGE_URL, allArticles.get(0).getThumbnailImageUrl());
             assertEquals(List.of(KEYWORD), allArticles.get(0).getKeywords());
+        }
+
+        @Test
+        @DisplayName("should update the last modified date when overriding an existing article")
+        void should_update_the_last_modified_date_when_overriding_an_existing_article() {
+            ArticleEntity entity = repository.save(getRandomArticleEntity());
+
+            Article article = getArticle();
+            article.setVersion(entity.getVersion());
+            article.setCreatedDate(entity.getCreatedDate());
+            article.setLastModifiedDate(entity.getLastModifiedDate());
+            storageManager.save(article);
+
+            List<ArticleEntity> allArticles = repository.findAll();
+            assertEquals(1, allArticles.size());
+            assertNotEquals(entity.getLastModifiedDate(), allArticles.get(0).getLastModifiedDate());
+        }
+
+        @Test
+        @DisplayName("should not update the created date when overriding an existing article")
+        void should_not_update_the_created_date_when_overriding_an_existing_article() {
+            ArticleEntity entity = repository.save(getRandomArticleEntity());
+
+            Article article = getArticle();
+            article.setVersion(entity.getVersion());
+            article.setCreatedDate(entity.getCreatedDate());
+            article.setLastModifiedDate(entity.getLastModifiedDate());
+            storageManager.save(article);
+
+            List<ArticleEntity> allArticles = repository.findAll();
+            assertEquals(1, allArticles.size());
+            assertEquals(entity.getCreatedDate().truncatedTo(ChronoUnit.SECONDS), allArticles.get(0).getCreatedDate().truncatedTo(ChronoUnit.SECONDS));
         }
 
         private static ArticleEntity getRandomArticleEntity() {
@@ -116,6 +165,8 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(CATEGORY_ID, optionalArticle.get().getCategoryId());
             assertEquals(THUMBNAIL_IMAGE_URL, optionalArticle.get().getThumbnailImageUrl());
             assertEquals(List.of(KEYWORD), optionalArticle.get().getKeywords());
+            assertNotNull(optionalArticle.get().getCreatedDate());
+            assertNotNull(optionalArticle.get().getLastModifiedDate());
         }
     }
 
@@ -145,6 +196,8 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(CATEGORY_ID, articles.getItems().get(0).getCategoryId());
             assertEquals(THUMBNAIL_IMAGE_URL, articles.getItems().get(0).getThumbnailImageUrl());
             assertEquals(List.of(KEYWORD), articles.getItems().get(0).getKeywords());
+            assertNotNull(articles.getItems().get(0).getCreatedDate());
+            assertNotNull(articles.getItems().get(0).getLastModifiedDate());
         }
 
         @Test

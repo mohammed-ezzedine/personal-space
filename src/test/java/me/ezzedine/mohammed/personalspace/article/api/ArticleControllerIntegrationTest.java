@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static me.ezzedine.mohammed.personalspace.TestUtils.loadResource;
@@ -43,6 +44,8 @@ class ArticleControllerIntegrationTest {
     public static final String CATEGORY_ID = "articleCategoryId";
     public static final String ARTICLE_THUMBNAIL_IMAGE_URL = "articleThumbnailImageUrl";
     public static final String KEYWORD = "keyword";
+    public static final String CREATED_DATE = "2023-12-24T12:33:42.411";
+    public static final String LAST_MODIFIED_DATE = "2023-12-24T12:34:51.182";
     @Autowired
     private MockMvc mockMvc;
 
@@ -206,6 +209,7 @@ class ArticleControllerIntegrationTest {
 
     private Article getArticle() {
         return Article.builder().id(ARTICLE_ID).title(TITLE).description(DESCRIPTION).content(CONTENT)
-                .categoryId(CATEGORY_ID).thumbnailImageUrl(ARTICLE_THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).build();
+                .categoryId(CATEGORY_ID).thumbnailImageUrl(ARTICLE_THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD))
+                .version(1L).createdDate(LocalDateTime.parse(CREATED_DATE)).lastModifiedDate(LocalDateTime.parse(LAST_MODIFIED_DATE)).build();
     }
 }

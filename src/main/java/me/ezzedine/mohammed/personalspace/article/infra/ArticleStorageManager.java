@@ -41,12 +41,15 @@ public class ArticleStorageManager implements ArticleStorage {
     private static ArticleEntity toEntity(Article article) {
         return ArticleEntity.builder().id(article.getId()).title(article.getTitle()).description(article.getDescription())
                 .content(article.getContent()).categoryId(article.getCategoryId()).thumbnailImageUrl(article.getThumbnailImageUrl())
-                .keywords(article.getKeywords()).build();
+                .keywords(article.getKeywords()).version(article.getVersion()).createdDate(article.getCreatedDate())
+                .lastModifiedDate(article.getLastModifiedDate()).build();
     }
 
     private static Article fromEntity(ArticleEntity articleEntity) {
         return Article.builder().id(articleEntity.getId()).content(articleEntity.getContent()).title(articleEntity.getTitle())
                 .description(articleEntity.getDescription()).categoryId(articleEntity.getCategoryId())
-                .thumbnailImageUrl(articleEntity.getThumbnailImageUrl()).keywords(articleEntity.getKeywords()).build();
+                .thumbnailImageUrl(articleEntity.getThumbnailImageUrl()).keywords(articleEntity.getKeywords())
+                .createdDate(articleEntity.getCreatedDate()).lastModifiedDate(articleEntity.getLastModifiedDate())
+                .version(articleEntity.getVersion()).build();
     }
 }

@@ -15,4 +15,6 @@ public class ArticleApiModel {
     private String categoryId;
     private String thumbnailImageUrl;
     private List<String> keywords;
+    private String createdDate;
+    private String lastModifiedDate;
 }

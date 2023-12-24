@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,6 +34,9 @@ class ArticleServiceTest {
     public static final String UPDATED_THUMBNAIL_IMAGE_URL = UUID.randomUUID().toString();
     public static final String KEYWORD = UUID.randomUUID().toString();
     public static final String UPDATED_KEYWORD = UUID.randomUUID().toString();
+    public static final Long VERSION = 1L;
+    public static final LocalDateTime CREATED_DATE = mock(LocalDateTime.class);
+    public static final LocalDateTime LAST_MODIFIED_DATE = mock(LocalDateTime.class);
     private ArticleStorage storage;
     private ArticleService service;
     private CategoryFetcher categoryFetcher;
@@ -127,6 +131,9 @@ class ArticleServiceTest {
             assertEquals(CATEGORY_ID, article.getCategoryId());
             assertEquals(THUMBNAIL_IMAGE_URL, article.getThumbnailImageUrl());
             assertEquals(List.of(KEYWORD), article.getKeywords());
+            assertEquals(VERSION, article.getVersion());
+            assertEquals(CREATED_DATE, article.getCreatedDate());
+            assertEquals(LAST_MODIFIED_DATE, article.getLastModifiedDate());
         }
     }
 
@@ -170,7 +177,7 @@ class ArticleServiceTest {
             service.edit(getRequest());
             Article updatedArticle = Article.builder().id(ARTICLE_ID).categoryId(UPDATED_CATEGORY_ID).title(UPDATED_TITLE)
                     .content(UPDATED_CONTENT).description(UPDATED_DESCRIPTION).thumbnailImageUrl(UPDATED_THUMBNAIL_IMAGE_URL)
-                    .keywords(List.of(UPDATED_KEYWORD)).build();
+                    .keywords(List.of(UPDATED_KEYWORD)).version(VERSION).createdDate(CREATED_DATE).lastModifiedDate(LAST_MODIFIED_DATE).build();
             verify(storage).save(updatedArticle);
         }
 
@@ -183,6 +190,7 @@ class ArticleServiceTest {
 
     private Article getArticle() {
         return Article.builder().id(ARTICLE_ID).title(TITLE).description(DESCRIPTION).content(CONTENT)
-                .categoryId(CATEGORY_ID).thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).build();
+                .categoryId(CATEGORY_ID).thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD))
+                .version(VERSION).createdDate(CREATED_DATE).lastModifiedDate(LAST_MODIFIED_DATE).build();
     }
 }
