@@ -10,7 +10,8 @@
       "thumbnailImageUrl": "articleThumbnailImageUrl",
       "keywords": ["keyword"],
       "createdDate": "2023-12-24T12:33:42.411",
-      "lastModifiedDate": "2023-12-24T12:34:51.182"
+      "lastModifiedDate": "2023-12-24T12:34:51.182",
+      "hidden": true
     }
   ]
 }

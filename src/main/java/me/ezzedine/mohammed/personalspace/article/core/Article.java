@@ -24,6 +24,7 @@ public class Article {
     private String thumbnailImageUrl;
     @Builder.Default
     private List<String> keywords = new ArrayList<>();
+    private boolean hidden;
     private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;
     private Long version;

@@ -17,4 +17,5 @@ public class ArticleApiModel {
     private List<String> keywords;
     private String createdDate;
     private String lastModifiedDate;
+    private Boolean hidden;
 }

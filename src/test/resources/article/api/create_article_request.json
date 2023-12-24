@@ -4,5 +4,6 @@
   "content": "articleContent",
   "categoryId": "articleCategoryId",
   "thumbnailImageUrl": "articleThumbnailImageUrl",
-  "keywords": ["keyword"]
+  "keywords": ["keyword"],
+  "hidden": true
 }

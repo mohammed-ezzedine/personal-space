@@ -25,6 +25,7 @@ public class ArticleEntity {
     private String categoryId;
     private String thumbnailImageUrl;
     private List<String> keywords;
+    private boolean hidden;
     @CreatedDate
     private LocalDateTime createdDate;
     @LastModifiedDate

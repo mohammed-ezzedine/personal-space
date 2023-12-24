@@ -18,4 +18,5 @@ public class ArticleUpdateApiRequest {
     private String content;
     private String thumbnailImageUrl;
     private List<String> keywords;
+    private Boolean hidden;
 }

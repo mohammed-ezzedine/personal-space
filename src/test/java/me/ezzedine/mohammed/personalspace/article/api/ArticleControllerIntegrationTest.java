@@ -46,6 +46,7 @@ class ArticleControllerIntegrationTest {
     public static final String KEYWORD = "keyword";
     public static final String CREATED_DATE = "2023-12-24T12:33:42.411";
     public static final String LAST_MODIFIED_DATE = "2023-12-24T12:34:51.182";
+    public static final boolean HIDDEN = true;
     @Autowired
     private MockMvc mockMvc;
 
@@ -136,7 +137,7 @@ class ArticleControllerIntegrationTest {
 
             ArticleCreationRequest request = ArticleCreationRequest.builder().title(TITLE).description(DESCRIPTION)
                     .content(CONTENT).categoryId(CATEGORY_ID).thumbnailImageUrl(ARTICLE_THUMBNAIL_IMAGE_URL)
-                    .keywords(List.of(KEYWORD)).build();
+                    .keywords(List.of(KEYWORD)).hidden(HIDDEN).build();
             verify(articleCreator).create(request);
         }
 
@@ -178,7 +179,8 @@ class ArticleControllerIntegrationTest {
 
             ArticleUpdateRequest request = ArticleUpdateRequest.builder().id(ARTICLE_ID).title("updatedArticleTitle")
                     .categoryId("updatedArticleCategoryId").content("updatedArticleContent").description("updatedArticleDescription")
-                    .thumbnailImageUrl("updatedArticleThumbnailImageUrl").keywords(List.of("updatedArticleKeyword")).build();
+                    .thumbnailImageUrl("updatedArticleThumbnailImageUrl").keywords(List.of("updatedArticleKeyword"))
+                    .hidden(true).build();
             verify(articleEditor).edit(request);
         }
 
@@ -210,6 +212,7 @@ class ArticleControllerIntegrationTest {
     private Article getArticle() {
         return Article.builder().id(ARTICLE_ID).title(TITLE).description(DESCRIPTION).content(CONTENT)
                 .categoryId(CATEGORY_ID).thumbnailImageUrl(ARTICLE_THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD))
-                .version(1L).createdDate(LocalDateTime.parse(CREATED_DATE)).lastModifiedDate(LocalDateTime.parse(LAST_MODIFIED_DATE)).build();
+                .version(1L).createdDate(LocalDateTime.parse(CREATED_DATE)).lastModifiedDate(LocalDateTime.parse(LAST_MODIFIED_DATE))
+                .hidden(HIDDEN).build();
     }
 }

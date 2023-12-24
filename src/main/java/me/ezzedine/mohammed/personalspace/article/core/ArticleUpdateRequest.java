@@ -16,6 +16,7 @@ public class ArticleUpdateRequest {
     private String content;
     private String thumbnailImageUrl;
     private List<String> keywords;
+    private Boolean hidden;
 
     public Optional<String> getTitle() {
         return Optional.ofNullable(title);
@@ -39,5 +40,9 @@ public class ArticleUpdateRequest {
 
     public Optional<List<String>> getKeywords() {
         return Optional.ofNullable(keywords);
+    }
+
+    public Optional<Boolean> getHidden() {
+        return Optional.ofNullable(hidden);
     }
 }

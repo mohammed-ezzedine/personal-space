@@ -64,13 +64,14 @@ public class ArticleController implements ArticleApi {
     private static ArticleUpdateRequest toDomainModel(String id, ArticleUpdateApiRequest request) {
         return ArticleUpdateRequest.builder().id(id).title(request.getTitle()).description(request.getDescription())
                 .content(request.getContent()).categoryId(request.getCategoryId()).thumbnailImageUrl(request.getThumbnailImageUrl())
-                .keywords(request.getKeywords()).build();
+                .keywords(request.getKeywords()).hidden(request.getHidden()).build();
     }
 
     private static ArticleApiModel toApiModel(Article article) {
         return ArticleApiModel.builder().id(article.getId()).title(article.getTitle()).description(article.getDescription())
                 .content(article.getContent()).categoryId(article.getCategoryId()).thumbnailImageUrl(article.getThumbnailImageUrl())
-                .keywords(article.getKeywords()).createdDate(getDateAsString(article.getCreatedDate())).lastModifiedDate(getDateAsString(article.getLastModifiedDate())).build();
+                .keywords(article.getKeywords()).createdDate(getDateAsString(article.getCreatedDate()))
+                .lastModifiedDate(getDateAsString(article.getLastModifiedDate())).hidden(article.isHidden()).build();
     }
 
     private static String getDateAsString(LocalDateTime createdDate) {
@@ -79,7 +80,7 @@ public class ArticleController implements ArticleApi {
 
     private static ArticleCreationRequest toDomainModel(ArticleCreationApiRequest request) {
         return ArticleCreationRequest.builder().title(request.getTitle()).content(request.getContent())
-                .description(request.getDescription()).categoryId(request.getCategoryId())
+                .description(request.getDescription()).categoryId(request.getCategoryId()).hidden(request.getHidden())
                 .thumbnailImageUrl(request.getThumbnailImageUrl()).keywords(request.getKeywords()).build();
     }
 }

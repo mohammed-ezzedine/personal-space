@@ -20,4 +20,6 @@ public class ArticleCreationApiRequest {
     private String thumbnailImageUrl;
     @NonNull
     private List<String> keywords;
+    @NonNull
+    private Boolean hidden;
 }

@@ -4,5 +4,6 @@
   "content": "updatedArticleContent",
   "categoryId": "updatedArticleCategoryId",
   "thumbnailImageUrl": "updatedArticleThumbnailImageUrl",
-  "keywords": ["updatedArticleKeyword"]
+  "keywords": ["updatedArticleKeyword"],
+  "hidden": true
 }
