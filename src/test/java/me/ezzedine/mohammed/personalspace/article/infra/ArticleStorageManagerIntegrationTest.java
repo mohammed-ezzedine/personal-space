@@ -216,8 +216,8 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             Page<Article> articles = storageManager.fetchAll(fetchCriteria);
             assertEquals(4, articles.getTotalSize());
             assertEquals(2, articles.getItems().size());
-            assertEquals(firstArticleId, articles.getItems().get(0).getId());
-            assertEquals(secondArticleId, articles.getItems().get(1).getId());
+            assertEquals(forthArticleId, articles.getItems().get(0).getId());
+            assertEquals(thirdArticleId, articles.getItems().get(1).getId());
         }
 
         @Test
@@ -237,8 +237,23 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
 
             assertEquals(4, articles.getTotalSize());
             assertEquals(2, articles.getItems().size());
-            assertEquals(thirdArticleId, articles.getItems().get(0).getId());
-            assertEquals(forthArticleId, articles.getItems().get(1).getId());
+            assertEquals(secondArticleId, articles.getItems().get(0).getId());
+            assertEquals(firstArticleId, articles.getItems().get(1).getId());
+        }
+
+        @Test
+        @DisplayName("should return the articles sorted in descending order of creation date")
+        void should_return_the_articles_sorted_in_descending_order_of_creation_date() {
+            String firstArticleId = UUID.randomUUID().toString();
+            repository.save(getEntity(firstArticleId));
+            String secondArticleId = UUID.randomUUID().toString();
+            repository.save(getEntity(secondArticleId));
+
+            FetchCriteria fetchCriteria = FetchCriteria.builder().startingPageIndex(0).maximumPageSize(2).build();
+            Page<Article> articles = storageManager.fetchAll(fetchCriteria);
+            assertEquals(2, articles.getItems().size());
+            assertEquals(secondArticleId, articles.getItems().get(0).getId());
+            assertEquals(firstArticleId, articles.getItems().get(1).getId());
         }
     }
 

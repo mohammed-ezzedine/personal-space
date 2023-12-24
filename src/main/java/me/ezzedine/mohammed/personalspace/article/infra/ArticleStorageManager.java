@@ -31,6 +31,7 @@ public class ArticleStorageManager implements ArticleStorage {
         long numberOfSkippedArticles = (long) criteria.getStartingPageIndex() * criteria.getMaximumPageSize();
         long totalNumberOfArticles = repository.count();
         List<Article> articles = repository.findAll().stream()
+                .sorted((a,b) -> b.getCreatedDate().compareTo(a.getCreatedDate()))
                 .skip(numberOfSkippedArticles)
                 .limit(criteria.getMaximumPageSize())
                 .map(ArticleStorageManager::fromEntity)
