@@ -39,6 +39,11 @@ public class ArticleStorageManager implements ArticleStorage {
         return Page.<Article>builder().items(articles).totalSize(totalNumberOfArticles).build();
     }
 
+    @Override
+    public List<Article> fetchByCategory(String categoryId) {
+        return repository.findByCategoryId(categoryId).stream().map(ArticleStorageManager::fromEntity).toList();
+    }
+
     private static ArticleEntity toEntity(Article article) {
         return ArticleEntity.builder().id(article.getId()).title(article.getTitle()).description(article.getDescription())
                 .content(article.getContent()).categoryId(article.getCategoryId()).thumbnailImageUrl(article.getThumbnailImageUrl())

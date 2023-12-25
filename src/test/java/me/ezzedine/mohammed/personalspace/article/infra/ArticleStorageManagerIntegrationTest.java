@@ -263,6 +263,39 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
         }
     }
 
+    @Nested
+    @DisplayName("When fetching the articles by categoryId")
+    class FetchingArticlesByCategoryIntegrationTest {
+        @Test
+        @DisplayName("should return an empty when list none exist")
+        void should_return_an_empty_when_list_none_exist() {
+            repository.save(getEntity(ID, CATEGORY_ID));
+            assertEquals(0, storageManager.fetchByCategory(UUID.randomUUID().toString()).size());
+        }
+
+        @Test
+        @DisplayName("should return the list of matching articles")
+        void should_return_the_list_of_matching_articles() {
+            String categoryA = UUID.randomUUID().toString();
+            String categoryB = UUID.randomUUID().toString();
+            ArticleEntity firstEntity = getEntity(UUID.randomUUID().toString(), categoryA);
+            ArticleEntity secondEntity = getEntity(UUID.randomUUID().toString(), categoryB);
+            ArticleEntity thirdEntity = getEntity(UUID.randomUUID().toString(), categoryA);
+
+            repository.saveAll(List.of(firstEntity, secondEntity, thirdEntity));
+            List<Article> articles = storageManager.fetchByCategory(categoryA);
+
+            assertEquals(2, articles.size());
+            assertEquals(firstEntity.getId(), articles.get(0).getId());
+            assertEquals(thirdEntity.getId(), articles.get(1).getId());
+        }
+
+        private ArticleEntity getEntity(String id, String categoryId) {
+            return ArticleEntity.builder().id(id).categoryId(categoryId).title(TITLE).description(DESCRIPTION)
+                    .content(CONTENT).thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).hidden(HIDDEN).build();
+        }
+    }
+
     private ArticleEntity getEntity(String id) {
         return ArticleEntity.builder().id(id).categoryId(CATEGORY_ID).title(TITLE).description(DESCRIPTION)
                 .content(CONTENT).thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).hidden(HIDDEN).build();

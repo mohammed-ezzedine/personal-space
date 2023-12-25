@@ -3,6 +3,7 @@ package me.ezzedine.mohammed.personalspace.category.api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.ezzedine.mohammed.personalspace.category.core.*;
+import me.ezzedine.mohammed.personalspace.category.core.deletion.CategoryDeletionRejectedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,6 +17,7 @@ public class CategoryController implements CategoryApi {
 
     private final CategoryFetcher fetcher;
     private final CategoryPersister persister;
+    private final CategoryDeleter deleter;
 
     @Override
     public ResponseEntity<List<CategorySummaryApiModel>> fetchCategoriesSummaries() {
@@ -43,6 +45,13 @@ public class CategoryController implements CategoryApi {
     public ResponseEntity<Void> updateCategoriesOrders(UpdateCategoriesOrdersApiRequest request) {
         log.info("Received a request to update the order of the categories {}", request);
         persister.updateCategoriesOrders(fromApiModel(request));
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> delete(String id) throws CategoryNotFoundException, CategoryDeletionRejectedException {
+        log.info("Received a request to delete the category with ID {}", id);
+        deleter.delete(id);
         return ResponseEntity.noContent().build();
     }
 

@@ -3,6 +3,7 @@ package me.ezzedine.mohammed.personalspace.category.api;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryIdAlreadyExistsException;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryNotFoundException;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryValidationViolationException;
+import me.ezzedine.mohammed.personalspace.category.core.deletion.CategoryDeletionRejectedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,4 +23,7 @@ public interface CategoryApi {
 
     @PutMapping("orders")
     ResponseEntity<Void> updateCategoriesOrders(@RequestBody UpdateCategoriesOrdersApiRequest request);
+
+    @DeleteMapping("{id}")
+    ResponseEntity<Void> delete(@PathVariable String id) throws CategoryNotFoundException, CategoryDeletionRejectedException;
 }

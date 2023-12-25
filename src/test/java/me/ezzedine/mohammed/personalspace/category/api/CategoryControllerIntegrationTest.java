@@ -1,10 +1,12 @@
 package me.ezzedine.mohammed.personalspace.category.api;
 
+import me.ezzedine.mohammed.personalspace.category.api.advice.CategoryDeletionRejectedAdvice;
 import me.ezzedine.mohammed.personalspace.category.api.advice.CategoryIdAlreadyExistsAdvice;
 import me.ezzedine.mohammed.personalspace.category.api.advice.CategoryNotFoundAdvice;
 import me.ezzedine.mohammed.personalspace.category.api.advice.CategoryValidationViolationAdvice;
 import me.ezzedine.mohammed.personalspace.category.core.*;
 import me.ezzedine.mohammed.personalspace.category.core.UpdateCategoriesOrdersRequest.CategoryOrder;
+import me.ezzedine.mohammed.personalspace.category.core.deletion.CategoryDeletionRejectedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,14 +20,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.List;
+import java.util.UUID;
 
 import static me.ezzedine.mohammed.personalspace.TestUtils.loadResource;
 import static me.ezzedine.mohammed.personalspace.TestUtils.loadResourceWithWhiteSpaces;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,7 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         CategoryController.class,
         CategoryValidationViolationAdvice.class,
         CategoryIdAlreadyExistsAdvice.class,
-        CategoryNotFoundAdvice.class
+        CategoryNotFoundAdvice.class,
+        CategoryDeletionRejectedAdvice.class
 })
 @EnableWebMvc
 @AutoConfigureMockMvc
@@ -47,6 +50,9 @@ class CategoryControllerIntegrationTest {
 
     @MockBean
     private CategoryPersister persister;
+
+    @MockBean
+    private CategoryDeleter deleter;
 
     @Nested
     @DisplayName("When fetching the summary of the existing categories")
@@ -174,6 +180,36 @@ class CategoryControllerIntegrationTest {
             UpdateCategoriesOrdersRequest request = UpdateCategoriesOrdersRequest.builder()
                     .categoryOrders(List.of(CategoryOrder.builder().categoryId("categoryId").order(4).build())).build();
             verify(persister).updateCategoriesOrders(request);
+        }
+    }
+
+    @Nested
+    @DisplayName("When deleting a category")
+    class DeletingCategoryIntegrationTest {
+        @Test
+        @DisplayName("should return a not found exception if the category does not exist")
+        void should_return_a_not_found_exception_if_the_category_does_not_exist() throws Exception {
+            doThrow(CategoryNotFoundException.class).when(deleter).delete("categoryId");
+            mockMvc.perform(delete("/categories/categoryId"))
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
+        @DisplayName("should return a bad request when the category cannot be deleted")
+        void should_return_a_bad_request_when_the_category_cannot_be_deleted() throws Exception {
+            String rejectionReason = UUID.randomUUID().toString();
+            doThrow(new CategoryDeletionRejectedException(rejectionReason)).when(deleter).delete("categoryId");
+            String response = mockMvc.perform(delete("/categories/categoryId"))
+                    .andExpect(status().isBadRequest())
+                    .andReturn().getResponse().getContentAsString();
+            assertEquals(rejectionReason, response);
+        }
+
+        @Test
+        @DisplayName("should return a success status when the category is successfully deleted")
+        void should_return_a_success_status_when_the_category_is_successfully_deleted() throws Exception {
+            mockMvc.perform(delete("/categories/categoryId"))
+                    .andExpect(status().is2xxSuccessful());
         }
     }
 }

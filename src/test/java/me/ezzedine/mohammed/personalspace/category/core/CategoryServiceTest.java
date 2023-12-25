@@ -1,5 +1,8 @@
 package me.ezzedine.mohammed.personalspace.category.core;
 
+import me.ezzedine.mohammed.personalspace.category.core.deletion.CategoryDeletionPermission;
+import me.ezzedine.mohammed.personalspace.category.core.deletion.CategoryDeletionPermissionGranter;
+import me.ezzedine.mohammed.personalspace.category.core.deletion.CategoryDeletionRejectedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,6 +27,8 @@ class CategoryServiceTest {
     private CategoryNameValidator nameValidator;
     private CategoryIdGenerator idGenerator;
     private CategoryOrderResolver orderResolver;
+    private CategoryDeletionPermissionGranter firstDeletionPermissionGranter;
+    private CategoryDeletionPermissionGranter secondDeletionPermissionGranter;
 
     @BeforeEach
     void setUp() {
@@ -31,7 +36,9 @@ class CategoryServiceTest {
         nameValidator = mock(CategoryNameValidator.class);
         idGenerator = mock(CategoryIdGenerator.class);
         orderResolver = mock(CategoryOrderResolver.class);
-        service = new CategoryService(storage, nameValidator, idGenerator, orderResolver);
+        firstDeletionPermissionGranter = mock(CategoryDeletionPermissionGranter.class);
+        secondDeletionPermissionGranter = mock(CategoryDeletionPermissionGranter.class);
+        service = new CategoryService(storage, nameValidator, idGenerator, orderResolver, List.of(firstDeletionPermissionGranter, secondDeletionPermissionGranter));
     }
 
     @Nested
@@ -199,6 +206,11 @@ class CategoryServiceTest {
     @DisplayName("When deleting an article category")
     class DeletingCategoryTest {
 
+        @BeforeEach
+        void setUp() {
+            when(storage.fetch(ID)).thenReturn(Optional.of(getCategory()));
+        }
+
         @Test
         @DisplayName("it should fail if the id does not exist")
         void it_should_fail_if_the_id_does_not_exist() {
@@ -207,12 +219,39 @@ class CategoryServiceTest {
         }
 
         @Test
-        @DisplayName("it should delete the category from the store when found")
-        void it_should_delete_the_category_from_the_store_when_found() throws CategoryNotFoundException {
+        @DisplayName("the user should not be allowed to delete a category if it is not allowed to get deleted")
+        void the_user_should_not_be_allowed_to_delete_a_category_if_it_is_not_allowed_to_get_deleted() {
+            String reason = UUID.randomUUID().toString();
+            when(firstDeletionPermissionGranter.canDeleteCategory(ID)).thenReturn(CategoryDeletionPermission.allowed());
+            when(secondDeletionPermissionGranter.canDeleteCategory(ID)).thenReturn(CategoryDeletionPermission.notAllowed(reason));
+
+            CategoryDeletionRejectedException exception = assertThrows(CategoryDeletionRejectedException.class, () -> service.delete(ID));
+            assertEquals(reason, exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("the user should receive a message when the deletion is rejected and the reason cannot be deduced")
+        void the_user_should_receive_a_message_when_the_deletion_is_rejected_and_the_reason_cannot_be_deduced() {
+            when(firstDeletionPermissionGranter.canDeleteCategory(ID)).thenReturn(CategoryDeletionPermission.allowed());
+            when(secondDeletionPermissionGranter.canDeleteCategory(ID)).thenReturn(CategoryDeletionPermission.notAllowed(null));
+            CategoryDeletionRejectedException exception = assertThrows(CategoryDeletionRejectedException.class, () -> service.delete(ID));
+            assertEquals("Category cannot be deleted at the moment.", exception.getMessage());
+        }
+
+        @Test
+        @DisplayName("the user should be able to delete an existing category if the permission is granted")
+        void the_user_should_be_able_to_delete_an_existing_category_if_the_permission_is_granted() throws CategoryNotFoundException, CategoryDeletionRejectedException {
+            when(firstDeletionPermissionGranter.canDeleteCategory(ID)).thenReturn(CategoryDeletionPermission.allowed());
+            when(secondDeletionPermissionGranter.canDeleteCategory(ID)).thenReturn(CategoryDeletionPermission.allowed());
             Category category = Category.builder().id(ID).name(NAME).build();
             when(storage.fetch(ID)).thenReturn(Optional.of(category));
             service.delete(ID);
             verify(storage).delete(ID);
         }
+
+    }
+
+    private static Category getCategory() {
+        return Category.builder().id(ID).name(NAME).build();
     }
 }

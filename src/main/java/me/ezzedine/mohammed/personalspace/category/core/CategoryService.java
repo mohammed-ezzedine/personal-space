@@ -1,19 +1,25 @@
 package me.ezzedine.mohammed.personalspace.category.core;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import me.ezzedine.mohammed.personalspace.category.core.deletion.CategoryDeletionPermission;
+import me.ezzedine.mohammed.personalspace.category.core.deletion.CategoryDeletionPermissionGranter;
+import me.ezzedine.mohammed.personalspace.category.core.deletion.CategoryDeletionRejectedException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class CategoryService implements CategoryFetcher, CategoryPersister {
+public class CategoryService implements CategoryFetcher, CategoryPersister, CategoryDeleter {
 
     private final CategoryStorage storage;
     private final CategoryNameValidator nameValidator;
     private final CategoryIdGenerator idGenerator;
     private final CategoryOrderResolver orderResolver;
+    private final List<CategoryDeletionPermissionGranter> categoryDeletionPermissionGranters;
 
     @Override
     public List<Category> fetchAll() {
@@ -45,9 +51,25 @@ public class CategoryService implements CategoryFetcher, CategoryPersister {
     }
 
     @Override
-    public void delete(String id) throws CategoryNotFoundException {
+    public void delete(String id) throws CategoryNotFoundException, CategoryDeletionRejectedException {
         validateCategoryExists(id);
+
+        validateThatCategoryCanBeDeleted(id);
+
         storage.delete(id);
+    }
+
+    private void validateThatCategoryCanBeDeleted(String id) throws CategoryDeletionRejectedException {
+        Optional<CategoryDeletionPermission> ungrantedPermission = categoryDeletionPermissionGranters.stream()
+                .map(granter -> granter.canDeleteCategory(id))
+                .filter(permission -> !permission.isAllowed())
+                .findAny();
+
+        if (ungrantedPermission.isPresent()) {
+            String rejectionReason = ungrantedPermission.get().getMessage().orElse("Category cannot be deleted at the moment.");
+            log.info("Category with ID {} cannot be deleted. Reason {}", id, rejectionReason);
+            throw new CategoryDeletionRejectedException(rejectionReason);
+        }
     }
 
     private void updateCategoryOrder(UpdateCategoriesOrdersRequest.CategoryOrder categoryOrder) {
