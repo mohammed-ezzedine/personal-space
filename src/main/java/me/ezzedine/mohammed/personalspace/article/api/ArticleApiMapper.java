@@ -1,0 +1,13 @@
+package me.ezzedine.mohammed.personalspace.article.api;
+
+import me.ezzedine.mohammed.personalspace.article.core.Article;
+
+public class ArticleApiMapper {
+    public static ArticleApiModel toApiModel(Article article) {
+        return ArticleApiModel.builder().id(article.getId()).title(article.getTitle()).description(article.getDescription())
+                .content(article.getContent()).categoryId(article.getCategoryId()).thumbnailImageUrl(article.getThumbnailImageUrl())
+                .keywords(article.getKeywords()).createdDate(article.getCreatedDate().toString())
+                .lastModifiedDate(article.getLastModifiedDate().toString()).hidden(article.isHidden()).build();
+    }
+
+}

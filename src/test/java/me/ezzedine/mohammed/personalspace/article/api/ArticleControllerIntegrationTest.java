@@ -18,10 +18,10 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static me.ezzedine.mohammed.personalspace.TestUtils.loadResource;
+import static me.ezzedine.mohammed.personalspace.article.api.ArticleApiTestUtil.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -37,16 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class ArticleControllerIntegrationTest {
 
-    public static final String ARTICLE_ID = "articleId";
-    public static final String TITLE = "articleTitle";
-    public static final String DESCRIPTION = "articleDescription";
-    public static final String CONTENT = "articleContent";
-    public static final String CATEGORY_ID = "articleCategoryId";
-    public static final String ARTICLE_THUMBNAIL_IMAGE_URL = "articleThumbnailImageUrl";
-    public static final String KEYWORD = "keyword";
-    public static final String CREATED_DATE = "2023-12-24T12:33:42.411";
-    public static final String LAST_MODIFIED_DATE = "2023-12-24T12:34:51.182";
-    public static final boolean HIDDEN = true;
     @Autowired
     private MockMvc mockMvc;
 
@@ -207,12 +197,5 @@ class ArticleControllerIntegrationTest {
                             .content(loadResource("article/api/edit_article_request.json"))
             ).andExpect(status().isNotFound());
         }
-    }
-
-    private Article getArticle() {
-        return Article.builder().id(ARTICLE_ID).title(TITLE).description(DESCRIPTION).content(CONTENT)
-                .categoryId(CATEGORY_ID).thumbnailImageUrl(ARTICLE_THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD))
-                .version(1L).createdDate(LocalDateTime.parse(CREATED_DATE)).lastModifiedDate(LocalDateTime.parse(LAST_MODIFIED_DATE))
-                .hidden(HIDDEN).build();
     }
 }

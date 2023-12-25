@@ -10,11 +10,11 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static me.ezzedine.mohammed.personalspace.article.api.ArticleApiMapper.toApiModel;
 
 @Slf4j
 @RestController
@@ -30,7 +30,7 @@ public class ArticleController implements ArticleApi {
         log.info("Received a request to fetch the article details of page {} and page size {}", page, size);
         Page<Article> articlesPage = articleFetcher.fetchAll(getFetchCriteria(page, size));
         List<ArticleApiModel> articlesApiModels = articlesPage.getItems().stream()
-                .map(ArticleController::toApiModel).collect(Collectors.toList());
+                .map(ArticleApiMapper::toApiModel).collect(Collectors.toList());
         Page<ArticleApiModel> articlesApiModelPage = Page.<ArticleApiModel>builder().totalSize(articlesPage.getTotalSize()).items(articlesApiModels).build();
         return ResponseEntity.ok(articlesApiModelPage);
     }
@@ -65,17 +65,6 @@ public class ArticleController implements ArticleApi {
         return ArticleUpdateRequest.builder().id(id).title(request.getTitle()).description(request.getDescription())
                 .content(request.getContent()).categoryId(request.getCategoryId()).thumbnailImageUrl(request.getThumbnailImageUrl())
                 .keywords(request.getKeywords()).hidden(request.getHidden()).build();
-    }
-
-    private static ArticleApiModel toApiModel(Article article) {
-        return ArticleApiModel.builder().id(article.getId()).title(article.getTitle()).description(article.getDescription())
-                .content(article.getContent()).categoryId(article.getCategoryId()).thumbnailImageUrl(article.getThumbnailImageUrl())
-                .keywords(article.getKeywords()).createdDate(getDateAsString(article.getCreatedDate()))
-                .lastModifiedDate(getDateAsString(article.getLastModifiedDate())).hidden(article.isHidden()).build();
-    }
-
-    private static String getDateAsString(LocalDateTime createdDate) {
-        return Optional.ofNullable(createdDate).map(Objects::toString).orElse(null);
     }
 
     private static ArticleCreationRequest toDomainModel(ArticleCreationApiRequest request) {

@@ -17,7 +17,6 @@ public class DatabaseIntegrationTest {
 
     @BeforeAll
     static void beforeAll() {
-        System.out.println("starting");
         container.start();
     }
 
