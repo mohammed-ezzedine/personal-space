@@ -4,14 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.ezzedine.mohammed.personalspace.article.core.*;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryNotFoundException;
-import me.ezzedine.mohammed.personalspace.util.pagination.FetchCriteria;
 import me.ezzedine.mohammed.personalspace.util.pagination.Page;
+import me.ezzedine.mohammed.personalspace.util.pagination.PaginationCriteria;
+import me.ezzedine.mohammed.personalspace.util.sort.SortingCriteria;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static me.ezzedine.mohammed.personalspace.article.api.ArticleApiMapper.toApiModel;
@@ -26,9 +26,9 @@ public class ArticleController implements ArticleApi {
     private final ArticleEditor articleEditor;
 
     @Override
-    public ResponseEntity<Page<ArticleSummaryApiModel>> getArticles(Optional<Integer> page, Optional<Integer> size) {
-        log.info("Received a request to fetch the article details of page {} and page size {}", page, size);
-        Page<Article> articlesPage = articleFetcher.fetchAll(getFetchCriteria(page, size));
+    public ResponseEntity<Page<ArticleSummaryApiModel>> getArticles(ArticlesFetchApiCriteria fetchCriteria) {
+        log.info("Received a request to fetch the article details with fetch criteria {}", fetchCriteria);
+        Page<Article> articlesPage = articleFetcher.fetchAll(getFetchCriteria(fetchCriteria));
         List<ArticleSummaryApiModel> articlesApiModels = articlesPage.getItems().stream()
                 .map(ArticleApiMapper::toSummaryApiModel).collect(Collectors.toList());
         Page<ArticleSummaryApiModel> articlesApiModelPage = Page.<ArticleSummaryApiModel>builder().totalSize(articlesPage.getTotalSize()).items(articlesApiModels).build();
@@ -57,8 +57,19 @@ public class ArticleController implements ArticleApi {
         return ResponseEntity.ok().build();
     }
 
-    private static FetchCriteria getFetchCriteria(Optional<Integer> page, Optional<Integer> size) {
-        return FetchCriteria.builder().startingPageIndex(page.orElse(0)).maximumPageSize(size.orElse(10)).build();
+    private static ArticlesFetchCriteria getFetchCriteria(ArticlesFetchApiCriteria fetchCriteria) {
+        ArticlesFetchCriteria criteria = ArticlesFetchCriteria.builder().highlighted(fetchCriteria.getHighlighted()).build();
+        if (fetchCriteria.getPage().isPresent()) {
+            PaginationCriteria paginationCriteria = PaginationCriteria.builder().startingPageIndex(fetchCriteria.getPage().get()).maximumPageSize(fetchCriteria.getSize().orElse(10)).build();
+            criteria.setPaginationCriteria(paginationCriteria);
+        }
+
+        if (fetchCriteria.getSortBy().isPresent()) {
+            SortingCriteria sortingCriteria = SortingCriteria.builder().field(fetchCriteria.getSortBy().get()).ascendingOrder(fetchCriteria.getAscOrder().orElse(true)).build();
+            criteria.setSortingCriteria(sortingCriteria);
+        }
+
+        return criteria;
     }
 
     private static ArticleUpdateRequest toDomainModel(String id, ArticleUpdateApiRequest request) {

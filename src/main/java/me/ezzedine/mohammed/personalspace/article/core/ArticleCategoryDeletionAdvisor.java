@@ -3,6 +3,7 @@ package me.ezzedine.mohammed.personalspace.article.core;
 import lombok.RequiredArgsConstructor;
 import me.ezzedine.mohammed.personalspace.category.core.deletion.CategoryDeletionPermission;
 import me.ezzedine.mohammed.personalspace.category.core.deletion.CategoryDeletionPermissionGranter;
+import me.ezzedine.mohammed.personalspace.util.pagination.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,12 +16,12 @@ public class ArticleCategoryDeletionAdvisor implements CategoryDeletionPermissio
 
     @Override
     public CategoryDeletionPermission canDeleteCategory(String categoryId) {
-        List<Article> articles = articleStorage.fetchByCategory(categoryId);
-        if (articles.isEmpty()) {
+        Page<Article> articles = articleStorage.fetchAll(ArticlesFetchCriteria.builder().categoryId(categoryId).build());
+        if (articles.getItems().isEmpty()) {
             return CategoryDeletionPermission.allowed();
         }
 
-        return CategoryDeletionPermission.notAllowed(getReasonMessage(articles));
+        return CategoryDeletionPermission.notAllowed(getReasonMessage(articles.getItems()));
     }
 
     private String getReasonMessage(List<Article> articles) {

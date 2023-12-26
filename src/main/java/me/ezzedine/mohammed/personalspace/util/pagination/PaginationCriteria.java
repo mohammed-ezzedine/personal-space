@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class FetchCriteria {
+public class PaginationCriteria {
     private int startingPageIndex;
     private int maximumPageSize;
 }

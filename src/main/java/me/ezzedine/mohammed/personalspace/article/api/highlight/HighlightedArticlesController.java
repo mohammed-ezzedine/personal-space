@@ -2,8 +2,6 @@ package me.ezzedine.mohammed.personalspace.article.api.highlight;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import me.ezzedine.mohammed.personalspace.article.api.ArticleApiMapper;
-import me.ezzedine.mohammed.personalspace.article.api.ArticleSummaryApiModel;
 import me.ezzedine.mohammed.personalspace.article.core.ArticleNotFoundException;
 import me.ezzedine.mohammed.personalspace.article.core.highlight.*;
 import org.springframework.http.ResponseEntity;
@@ -38,13 +36,6 @@ public class HighlightedArticlesController implements HighlightedArticlesApi {
         log.info("Received a request to update the article highlights as follows {}", request);
         updater.updateArticlesHighlights(request.getArticles().stream().map(HighlightedArticlesController::fromApiModel).toList());
         return ResponseEntity.ok().build();
-    }
-
-    @Override
-    public ResponseEntity<List<ArticleSummaryApiModel>> getHighlightedArticles() {
-        log.info("Received a request to fetch the list of highlighted articles");
-        List<ArticleSummaryApiModel> articles = fetcher.getHighlightedArticles().stream().map(ArticleApiMapper::toSummaryApiModel).toList();
-        return ResponseEntity.ok(articles);
     }
 
     @Override

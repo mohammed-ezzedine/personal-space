@@ -20,7 +20,6 @@ import java.util.List;
 
 import static me.ezzedine.mohammed.personalspace.TestUtils.loadResource;
 import static me.ezzedine.mohammed.personalspace.article.api.ArticleApiTestUtil.ARTICLE_ID;
-import static me.ezzedine.mohammed.personalspace.article.api.ArticleApiTestUtil.getArticle;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -119,22 +118,6 @@ class HighlightedArticlesControllerIntegrationTest {
                             .content(loadResource("article/api/update_highlights_request.json")))
                     .andExpect(status().is2xxSuccessful());
             verify(updater).updateArticlesHighlights(List.of(HighlightedArticle.builder().articleId("id").highlightRank(4).build()));
-        }
-    }
-
-    @Nested
-    @DisplayName("When fetching the list of highlighted articles")
-    class FetchingHighlightedArticlesIntegrationTest {
-
-        @Test
-        @DisplayName("should return the list of articles on the happy path")
-        void should_return_the_list_of_articles_on_the_happy_path() throws Exception {
-            when(fetcher.getHighlightedArticles()).thenReturn(List.of(getArticle()));
-            String content = mockMvc.perform(get("/articles/highlight"))
-                    .andExpect(status().is2xxSuccessful())
-                    .andReturn().getResponse().getContentAsString();
-
-            assertEquals(loadResource("article/api/highlighted_articles_details_response.json"), content);
         }
     }
 

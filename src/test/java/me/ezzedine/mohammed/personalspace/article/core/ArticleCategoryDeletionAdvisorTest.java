@@ -1,11 +1,11 @@
 package me.ezzedine.mohammed.personalspace.article.core;
 
+import me.ezzedine.mohammed.personalspace.util.pagination.Page;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,7 +28,7 @@ class ArticleCategoryDeletionAdvisorTest {
     @DisplayName("the user should not be able to delete a category that has at least one article linked to it")
     void the_user_should_not_be_able_to_delete_a_category_that_has_at_least_one_article_linked_to_it() {
         Article article = getArticleMock(UUID.randomUUID().toString());
-        when(articleStorage.fetchByCategory(CATEGORY_ID)).thenReturn(List.of(article));
+        when(articleStorage.fetchAll(ArticlesFetchCriteria.builder().categoryId(CATEGORY_ID).build())).thenReturn(getPage(article));
         assertFalse(deletionAdvisor.canDeleteCategory(CATEGORY_ID).isAllowed());
     }
 
@@ -40,7 +40,7 @@ class ArticleCategoryDeletionAdvisorTest {
         String secondArticleId = UUID.randomUUID().toString();
         Article secondArticle = getArticleMock(secondArticleId);
 
-        when(articleStorage.fetchByCategory(CATEGORY_ID)).thenReturn(List.of(firstArticle, secondArticle));
+        when(articleStorage.fetchAll(ArticlesFetchCriteria.builder().categoryId(CATEGORY_ID).build())).thenReturn(getPage(firstArticle, secondArticle));
         assertTrue(deletionAdvisor.canDeleteCategory(CATEGORY_ID).getMessage().isPresent());
         String message = "Category cannot be deleted since it is linked to the following articles: [" + firstArticleId + ", " + secondArticleId + "]";
         assertEquals(message, deletionAdvisor.canDeleteCategory(CATEGORY_ID).getMessage().get());
@@ -49,8 +49,12 @@ class ArticleCategoryDeletionAdvisorTest {
     @Test
     @DisplayName("the user should be able to delete a category that is not linked to any article")
     void the_user_should_be_able_to_delete_a_category_that_is_not_linked_to_any_article() {
-        when(articleStorage.fetchByCategory(CATEGORY_ID)).thenReturn(Collections.emptyList());
+        when(articleStorage.fetchAll(ArticlesFetchCriteria.builder().categoryId(CATEGORY_ID).build())).thenReturn(getPage());
         assertTrue(deletionAdvisor.canDeleteCategory(CATEGORY_ID).isAllowed());
+    }
+
+    private static Page<Article> getPage(Article... articles) {
+        return Page.<Article>builder().items(Arrays.asList(articles)).build();
     }
 
     private Article getArticleMock(String id) {

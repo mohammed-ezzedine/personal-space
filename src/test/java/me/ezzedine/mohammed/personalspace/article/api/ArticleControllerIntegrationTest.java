@@ -4,8 +4,9 @@ import me.ezzedine.mohammed.personalspace.article.api.advice.ArticleNotFoundAdvi
 import me.ezzedine.mohammed.personalspace.article.core.*;
 import me.ezzedine.mohammed.personalspace.category.api.advice.CategoryNotFoundAdvice;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryNotFoundException;
-import me.ezzedine.mohammed.personalspace.util.pagination.FetchCriteria;
 import me.ezzedine.mohammed.personalspace.util.pagination.Page;
+import me.ezzedine.mohammed.personalspace.util.pagination.PaginationCriteria;
+import me.ezzedine.mohammed.personalspace.util.sort.SortingCriteria;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -52,32 +53,95 @@ class ArticleControllerIntegrationTest {
     @Nested
     @DisplayName("When fetching the details of all articles")
     class FetchingAllArticlesDetailsIntegrationTest {
-        @Test
-        @DisplayName("should return a success status code with the details of the articles")
-        void should_return_a_success_status_code_with_the_details_of_the_articles() throws Exception {
-            Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
-            when(articleFetcher.fetchAll(FetchCriteria.builder().maximumPageSize(13).startingPageIndex(2).build())).thenReturn(page);
 
-            String response = mockMvc.perform(get("/articles")
-                                                .param("page", "2")
-                                                .param("size", "13"))
-                    .andExpect(status().is2xxSuccessful())
-                    .andReturn().getResponse().getContentAsString();
+        @Nested
+        @DisplayName("When specifying pagination criteria")
+        class FetchingPaginatedArticleDetailsIntegrationTest {
 
-            assertEquals(loadResource("article/api/all_articles_details_response.json"), response);
+            @Test
+            @DisplayName("should return a success status code with the details of the articles")
+            void should_return_a_success_status_code_with_the_details_of_the_articles() throws Exception {
+                Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
+                PaginationCriteria paginationCriteria = PaginationCriteria.builder().maximumPageSize(13).startingPageIndex(2).build();
+                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().paginationCriteria(paginationCriteria).build())).thenReturn(page);
+
+                String response = mockMvc.perform(get("/articles")
+                                .param("page", "2")
+                                .param("size", "13"))
+                        .andExpect(status().is2xxSuccessful())
+                        .andReturn().getResponse().getContentAsString();
+
+                assertEquals(loadResource("article/api/all_articles_details_response.json"), response);
+            }
+
+            @Test
+            @DisplayName("should default the page size to 10 articles if the user specified the page index but not its size")
+            void should_default_the_page_size_to_10_articles_if_the_user_specified_the_page_index_but_not_its_size() throws Exception {
+                Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
+                PaginationCriteria paginationCriteria = PaginationCriteria.builder().maximumPageSize(10).startingPageIndex(2).build();
+                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().paginationCriteria(paginationCriteria).build())).thenReturn(page);
+
+                String response = mockMvc.perform(get("/articles")
+                                .param("page", "2"))
+                        .andExpect(status().is2xxSuccessful())
+                        .andReturn().getResponse().getContentAsString();
+
+                assertEquals(loadResource("article/api/all_articles_details_response.json"), response);
+            }
         }
 
-        @Test
-        @DisplayName("should fetch the first 10 articles if the user did not specify")
-        void should_fetch_the_first_10_articles_if_the_user_did_not_specify() throws Exception {
-            Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
-            when(articleFetcher.fetchAll(FetchCriteria.builder().maximumPageSize(10).startingPageIndex(0).build())).thenReturn(page);
+        @Nested
+        @DisplayName("When specifying a filtering criteria on the highlight property")
+        class FetchingHighlightFilteredArticleDetailsIntegrationTest {
+            @Test
+            @DisplayName("should return a success status code with the details of the articles")
+            void should_return_a_success_status_code_with_the_details_of_the_articles() throws Exception {
+                Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
+                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().highlighted(true).build())).thenReturn(page);
 
-            String response = mockMvc.perform(get("/articles"))
-                    .andExpect(status().is2xxSuccessful())
-                    .andReturn().getResponse().getContentAsString();
+                String response = mockMvc.perform(get("/articles")
+                                .param("highlighted", "true"))
+                        .andExpect(status().is2xxSuccessful())
+                        .andReturn().getResponse().getContentAsString();
 
-            assertEquals(loadResource("article/api/all_articles_details_response.json"), response);
+                assertEquals(loadResource("article/api/all_articles_details_response.json"), response);
+            }
+        }
+
+        @Nested
+        @DisplayName("When sorting by a specific field")
+        class FetchSortedArticlesDetailsIntegrationTest {
+
+            @Test
+            @DisplayName("should return a success status code with the details of the articles")
+            void should_return_a_success_status_code_with_the_details_of_the_articles() throws Exception {
+                Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
+                SortingCriteria sortingCriteria = SortingCriteria.builder().field("createdDate").ascendingOrder(false).build();
+                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().sortingCriteria(sortingCriteria).build())).thenReturn(page);
+
+                String response = mockMvc.perform(get("/articles")
+                                .param("sortBy", "createdDate")
+                                .param("ascOrder", "false"))
+                        .andExpect(status().is2xxSuccessful())
+                        .andReturn().getResponse().getContentAsString();
+
+                assertEquals(loadResource("article/api/all_articles_details_response.json"), response);
+            }
+
+            @Test
+            @DisplayName("should default to the ascending order sorting when not mentioned")
+            void should_default_to_the_ascending_order_sorting_when_not_mentioned() throws Exception {
+                Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
+                SortingCriteria sortingCriteria = SortingCriteria.builder().field("createdDate").ascendingOrder(true).build();
+                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().sortingCriteria(sortingCriteria).build())).thenReturn(page);
+
+                String response = mockMvc.perform(get("/articles")
+                                .param("sortBy", "createdDate"))
+                        .andExpect(status().is2xxSuccessful())
+                        .andReturn().getResponse().getContentAsString();
+
+                assertEquals(loadResource("article/api/all_articles_details_response.json"), response);
+            }
         }
     }
 

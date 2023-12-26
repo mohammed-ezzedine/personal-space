@@ -2,7 +2,6 @@ package me.ezzedine.mohammed.personalspace.article.core;
 
 import me.ezzedine.mohammed.personalspace.category.core.CategoryFetcher;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryNotFoundException;
-import me.ezzedine.mohammed.personalspace.util.pagination.FetchCriteria;
 import me.ezzedine.mohammed.personalspace.util.pagination.Page;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -149,10 +148,10 @@ class ArticleServiceTest {
         @Test
         @DisplayName("should retrieve their information from the storage")
         void should_retrieve_their_information_from_the_storage() {
-            FetchCriteria fetchCriteria = mock(FetchCriteria.class);
+            ArticlesFetchCriteria criteria = mock(ArticlesFetchCriteria.class);
             Page page = mock(Page.class);
-            when(storage.fetchAll(fetchCriteria)).thenReturn(page);
-            Page<Article> articles = service.fetchAll(fetchCriteria);
+            when(storage.fetchAll(criteria)).thenReturn(page);
+            Page<Article> articles = service.fetchAll(criteria);
             assertEquals(page, articles);
         }
     }
