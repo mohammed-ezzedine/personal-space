@@ -12,5 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HighlightedArticlesUpdateRequest {
-    private List<HighlightedArticleApiModel> articles;
+    private List<ArticleHighlightApiModel> articles;
 }

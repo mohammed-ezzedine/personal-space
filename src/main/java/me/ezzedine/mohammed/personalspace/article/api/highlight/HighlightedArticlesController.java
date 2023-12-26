@@ -3,7 +3,7 @@ package me.ezzedine.mohammed.personalspace.article.api.highlight;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.ezzedine.mohammed.personalspace.article.api.ArticleApiMapper;
-import me.ezzedine.mohammed.personalspace.article.api.ArticleApiModel;
+import me.ezzedine.mohammed.personalspace.article.api.ArticleSummaryApiModel;
 import me.ezzedine.mohammed.personalspace.article.core.ArticleNotFoundException;
 import me.ezzedine.mohammed.personalspace.article.core.highlight.*;
 import org.springframework.http.ResponseEntity;
@@ -41,24 +41,24 @@ public class HighlightedArticlesController implements HighlightedArticlesApi {
     }
 
     @Override
-    public ResponseEntity<List<ArticleApiModel>> getHighlightedArticles() {
+    public ResponseEntity<List<ArticleSummaryApiModel>> getHighlightedArticles() {
         log.info("Received a request to fetch the list of highlighted articles");
-        List<ArticleApiModel> articles = fetcher.getHighlightedArticles().stream().map(ArticleApiMapper::toApiModel).toList();
+        List<ArticleSummaryApiModel> articles = fetcher.getHighlightedArticles().stream().map(ArticleApiMapper::toSummaryApiModel).toList();
         return ResponseEntity.ok(articles);
     }
 
     @Override
-    public ResponseEntity<List<HighlightedArticleApiModel>> getHighlightedArticlesSummary() {
+    public ResponseEntity<List<ArticleHighlightApiModel>> getHighlightedArticlesSummary() {
         log.info("Received a request to fetch the summary of the list of highlighted articles");
-        List<HighlightedArticleApiModel> summary = fetcher.getHighlightedArticlesSummary().stream().map(HighlightedArticlesController::toApiModel).toList();
+        List<ArticleHighlightApiModel> summary = fetcher.getHighlightedArticlesSummary().stream().map(HighlightedArticlesController::toApiModel).toList();
         return ResponseEntity.ok(summary);
     }
 
-    private static HighlightedArticle fromApiModel(HighlightedArticleApiModel a) {
+    private static HighlightedArticle fromApiModel(ArticleHighlightApiModel a) {
         return HighlightedArticle.builder().articleId(a.getArticleId()).highlightRank(a.getRank()).build();
     }
 
-    private static HighlightedArticleApiModel toApiModel(HighlightedArticle a) {
-        return HighlightedArticleApiModel.builder().articleId(a.getArticleId()).rank(a.getHighlightRank()).build();
+    private static ArticleHighlightApiModel toApiModel(HighlightedArticle a) {
+        return ArticleHighlightApiModel.builder().articleId(a.getArticleId()).rank(a.getHighlightRank()).build();
     }
 }

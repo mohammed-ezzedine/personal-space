@@ -1,6 +1,6 @@
 package me.ezzedine.mohammed.personalspace.article.api.highlight;
 
-import me.ezzedine.mohammed.personalspace.article.api.ArticleApiModel;
+import me.ezzedine.mohammed.personalspace.article.api.ArticleSummaryApiModel;
 import me.ezzedine.mohammed.personalspace.article.core.ArticleNotFoundException;
 import me.ezzedine.mohammed.personalspace.article.core.highlight.ArticleAlreadyHighlightedException;
 import me.ezzedine.mohammed.personalspace.article.core.highlight.ArticleWasNotHighlightedException;
@@ -22,8 +22,8 @@ public interface HighlightedArticlesApi {
     ResponseEntity<Void> updateHighlightedArticles(@RequestBody HighlightedArticlesUpdateRequest request);
 
     @GetMapping
-    ResponseEntity<List<ArticleApiModel>> getHighlightedArticles();
+    ResponseEntity<List<ArticleSummaryApiModel>> getHighlightedArticles();
 
     @GetMapping("summary")
-    ResponseEntity<List<HighlightedArticleApiModel>> getHighlightedArticlesSummary();
+    ResponseEntity<List<ArticleHighlightApiModel>> getHighlightedArticlesSummary();
 }

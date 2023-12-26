@@ -1,21 +1,15 @@
 package me.ezzedine.mohammed.personalspace.article.api;
 
-import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
-public class ArticleApiModel {
-    private String id;
-    private String title;
-    private String description;
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
+public class ArticleApiModel extends ArticleSummaryApiModel {
+
     private String content;
-    private String categoryId;
-    private String thumbnailImageUrl;
-    private List<String> keywords;
-    private String createdDate;
-    private String lastModifiedDate;
-    private Boolean hidden;
+
+
 }

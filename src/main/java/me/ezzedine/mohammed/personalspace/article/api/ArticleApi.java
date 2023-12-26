@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface ArticleApi {
 
     @GetMapping
-    ResponseEntity<Page<ArticleApiModel>> getArticles(@RequestParam Optional<Integer> page, @RequestParam Optional<Integer> size);
+    ResponseEntity<Page<ArticleSummaryApiModel>> getArticles(@RequestParam Optional<Integer> page, @RequestParam Optional<Integer> size);
 
     @GetMapping("{id}")
     ResponseEntity<ArticleApiModel> getArticle(@PathVariable String id) throws ArticleNotFoundException;

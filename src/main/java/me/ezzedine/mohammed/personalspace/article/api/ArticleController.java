@@ -26,17 +26,13 @@ public class ArticleController implements ArticleApi {
     private final ArticleEditor articleEditor;
 
     @Override
-    public ResponseEntity<Page<ArticleApiModel>> getArticles(Optional<Integer> page, Optional<Integer> size) {
+    public ResponseEntity<Page<ArticleSummaryApiModel>> getArticles(Optional<Integer> page, Optional<Integer> size) {
         log.info("Received a request to fetch the article details of page {} and page size {}", page, size);
         Page<Article> articlesPage = articleFetcher.fetchAll(getFetchCriteria(page, size));
-        List<ArticleApiModel> articlesApiModels = articlesPage.getItems().stream()
-                .map(ArticleApiMapper::toApiModel).collect(Collectors.toList());
-        Page<ArticleApiModel> articlesApiModelPage = Page.<ArticleApiModel>builder().totalSize(articlesPage.getTotalSize()).items(articlesApiModels).build();
+        List<ArticleSummaryApiModel> articlesApiModels = articlesPage.getItems().stream()
+                .map(ArticleApiMapper::toSummaryApiModel).collect(Collectors.toList());
+        Page<ArticleSummaryApiModel> articlesApiModelPage = Page.<ArticleSummaryApiModel>builder().totalSize(articlesPage.getTotalSize()).items(articlesApiModels).build();
         return ResponseEntity.ok(articlesApiModelPage);
-    }
-
-    private static FetchCriteria getFetchCriteria(Optional<Integer> page, Optional<Integer> size) {
-        return FetchCriteria.builder().startingPageIndex(page.orElse(0)).maximumPageSize(size.orElse(10)).build();
     }
 
     @Override
@@ -59,6 +55,10 @@ public class ArticleController implements ArticleApi {
         log.info("Received a request to edit article with ID {}", id);
         articleEditor.edit(toDomainModel(id, request));
         return ResponseEntity.ok().build();
+    }
+
+    private static FetchCriteria getFetchCriteria(Optional<Integer> page, Optional<Integer> size) {
+        return FetchCriteria.builder().startingPageIndex(page.orElse(0)).maximumPageSize(size.orElse(10)).build();
     }
 
     private static ArticleUpdateRequest toDomainModel(String id, ArticleUpdateApiRequest request) {

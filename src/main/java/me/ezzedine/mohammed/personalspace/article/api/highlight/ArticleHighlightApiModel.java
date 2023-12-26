@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class HighlightedArticleApiModel {
+public class ArticleHighlightApiModel {
     private String articleId;
     private int rank;
 }
