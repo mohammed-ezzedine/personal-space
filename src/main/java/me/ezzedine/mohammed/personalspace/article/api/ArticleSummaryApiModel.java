@@ -17,4 +17,5 @@ public class ArticleSummaryApiModel {
     private String lastModifiedDate;
     private Boolean hidden;
     private List<String> keywords;
+    private String estimatedReadingTime;
 }

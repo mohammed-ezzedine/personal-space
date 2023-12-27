@@ -22,4 +22,6 @@ public class ArticleCreationApiRequest {
     private List<String> keywords;
     @NonNull
     private Boolean hidden;
+    @NonNull
+    private String estimatedReadingTime;
 }

@@ -17,11 +17,12 @@ public class ArticleApiTestUtil {
     public static final String CREATED_DATE = "2023-12-24T12:33:42.411";
     public static final String LAST_MODIFIED_DATE = "2023-12-24T12:34:51.182";
     public static final boolean HIDDEN = true;
+    public static final String ESTIMATED_READING_TIME = "estimatedReadingTime";
 
     public static Article getArticle() {
         return Article.builder().id(ARTICLE_ID).title(TITLE).description(DESCRIPTION).content(CONTENT)
                 .categoryId(CATEGORY_ID).thumbnailImageUrl(ARTICLE_THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD))
                 .version(1L).createdDate(LocalDateTime.parse(CREATED_DATE)).lastModifiedDate(LocalDateTime.parse(LAST_MODIFIED_DATE))
-                .hidden(HIDDEN).build();
+                .hidden(HIDDEN).estimatedReadingTime(ESTIMATED_READING_TIME).build();
     }
 }

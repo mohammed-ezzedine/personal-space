@@ -22,6 +22,8 @@ public class Article {
     @NonNull
     private String content;
     private String thumbnailImageUrl;
+    @NonNull
+    private String estimatedReadingTime;
     @Builder.Default
     private List<String> keywords = new ArrayList<>();
     private boolean hidden;

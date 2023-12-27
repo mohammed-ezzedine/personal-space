@@ -50,6 +50,7 @@ public class ArticleService implements ArticleCreator, ArticleFetcher, ArticleEd
         request.getThumbnailImageUrl().ifPresent(article::setThumbnailImageUrl);
         request.getKeywords().ifPresent(article::setKeywords);
         request.getHidden().ifPresent(article::setHidden);
+        request.getEstimatedReadingTime().ifPresent(article::setEstimatedReadingTime);
 
         storage.save(article);
     }
@@ -62,7 +63,7 @@ public class ArticleService implements ArticleCreator, ArticleFetcher, ArticleEd
         String articleId = idGenerator.generate();
         Article article = Article.builder().id(articleId).content(request.getContent()).categoryId(request.getCategoryId())
                 .description(request.getDescription()).title(request.getTitle()).thumbnailImageUrl(request.getThumbnailImageUrl())
-                .keywords(request.getKeywords()).hidden(request.getHidden()).build();
+                .keywords(request.getKeywords()).hidden(request.getHidden()).estimatedReadingTime(request.getEstimatedReadingTime()).build();
         storage.save(article);
         return articleId;
     }

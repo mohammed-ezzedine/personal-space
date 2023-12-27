@@ -75,12 +75,13 @@ public class ArticleController implements ArticleApi {
     private static ArticleUpdateRequest toDomainModel(String id, ArticleUpdateApiRequest request) {
         return ArticleUpdateRequest.builder().id(id).title(request.getTitle()).description(request.getDescription())
                 .content(request.getContent()).categoryId(request.getCategoryId()).thumbnailImageUrl(request.getThumbnailImageUrl())
-                .keywords(request.getKeywords()).hidden(request.getHidden()).build();
+                .keywords(request.getKeywords()).hidden(request.getHidden()).estimatedReadingTime(request.getEstimatedReadingTime()).build();
     }
 
     private static ArticleCreationRequest toDomainModel(ArticleCreationApiRequest request) {
         return ArticleCreationRequest.builder().title(request.getTitle()).content(request.getContent())
                 .description(request.getDescription()).categoryId(request.getCategoryId()).hidden(request.getHidden())
-                .thumbnailImageUrl(request.getThumbnailImageUrl()).keywords(request.getKeywords()).build();
+                .thumbnailImageUrl(request.getThumbnailImageUrl()).keywords(request.getKeywords())
+                .estimatedReadingTime(request.getEstimatedReadingTime()).build();
     }
 }

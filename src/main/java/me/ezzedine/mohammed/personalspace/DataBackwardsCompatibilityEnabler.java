@@ -7,7 +7,6 @@ import me.ezzedine.mohammed.personalspace.article.infra.ArticleMongoRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -22,16 +21,8 @@ public class DataBackwardsCompatibilityEnabler implements CommandLineRunner {
         List<ArticleEntity> articles = articleMongoRepository.findAll();
         for (ArticleEntity article : articles) {
 
-            if (article.getCreatedDate() == null) {
-                article.setCreatedDate(LocalDateTime.now());
-            }
-
-            if (article.getLastModifiedDate() == null) {
-                article.setLastModifiedDate(LocalDateTime.now());
-            }
-
-            if (article.getVersion() == null) {
-                articleMongoRepository.deleteById(article.getId());
+            if (article.getEstimatedReadingTime() == null) {
+                article.setEstimatedReadingTime("");
             }
 
             articleMongoRepository.save(article);

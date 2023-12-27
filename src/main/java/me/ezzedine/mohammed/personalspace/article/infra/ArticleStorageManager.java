@@ -96,7 +96,7 @@ public class ArticleStorageManager implements ArticleStorage {
         return ArticleEntity.builder().id(article.getId()).title(article.getTitle()).description(article.getDescription())
                 .content(article.getContent()).categoryId(article.getCategoryId()).thumbnailImageUrl(article.getThumbnailImageUrl())
                 .keywords(article.getKeywords()).version(article.getVersion()).createdDate(article.getCreatedDate())
-                .lastModifiedDate(article.getLastModifiedDate()).hidden(article.isHidden()).build();
+                .lastModifiedDate(article.getLastModifiedDate()).hidden(article.isHidden()).estimatedReadingTime(article.getEstimatedReadingTime()).build();
     }
 
     private static Article fromEntity(ArticleEntity articleEntity) {
@@ -104,6 +104,6 @@ public class ArticleStorageManager implements ArticleStorage {
                 .description(articleEntity.getDescription()).categoryId(articleEntity.getCategoryId())
                 .thumbnailImageUrl(articleEntity.getThumbnailImageUrl()).keywords(articleEntity.getKeywords())
                 .createdDate(articleEntity.getCreatedDate()).lastModifiedDate(articleEntity.getLastModifiedDate())
-                .version(articleEntity.getVersion()).hidden(articleEntity.isHidden()).build();
+                .version(articleEntity.getVersion()).hidden(articleEntity.isHidden()).estimatedReadingTime(articleEntity.getEstimatedReadingTime()).build();
     }
 }

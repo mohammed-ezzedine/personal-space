@@ -191,7 +191,7 @@ class ArticleControllerIntegrationTest {
 
             ArticleCreationRequest request = ArticleCreationRequest.builder().title(TITLE).description(DESCRIPTION)
                     .content(CONTENT).categoryId(CATEGORY_ID).thumbnailImageUrl(ARTICLE_THUMBNAIL_IMAGE_URL)
-                    .keywords(List.of(KEYWORD)).hidden(HIDDEN).build();
+                    .keywords(List.of(KEYWORD)).hidden(HIDDEN).estimatedReadingTime(ESTIMATED_READING_TIME).build();
             verify(articleCreator).create(request);
         }
 
@@ -234,7 +234,7 @@ class ArticleControllerIntegrationTest {
             ArticleUpdateRequest request = ArticleUpdateRequest.builder().id(ARTICLE_ID).title("updatedArticleTitle")
                     .categoryId("updatedArticleCategoryId").content("updatedArticleContent").description("updatedArticleDescription")
                     .thumbnailImageUrl("updatedArticleThumbnailImageUrl").keywords(List.of("updatedArticleKeyword"))
-                    .hidden(true).build();
+                    .hidden(true).estimatedReadingTime("updatedEstimatedReadingTime").build();
             verify(articleEditor).edit(request);
         }
 

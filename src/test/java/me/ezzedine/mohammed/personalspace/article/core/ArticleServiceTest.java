@@ -38,6 +38,8 @@ class ArticleServiceTest {
     public static final LocalDateTime LAST_MODIFIED_DATE = mock(LocalDateTime.class);
     public static final boolean HIDDEN = true;
     public static final boolean UPDATED_HIDDEN = false;
+    public static final String ESTIMATED_READING_TIME = UUID.randomUUID().toString();
+    public static final String UPDATED_ESTIMATED_READING_TIME = UUID.randomUUID().toString();
     private ArticleStorage storage;
     private ArticleService service;
     private CategoryFetcher categoryFetcher;
@@ -91,6 +93,7 @@ class ArticleServiceTest {
             assertEquals(THUMBNAIL_IMAGE_URL, argumentCaptor.getValue().getThumbnailImageUrl());
             assertEquals(List.of(KEYWORD), argumentCaptor.getValue().getKeywords());
             assertEquals(HIDDEN, argumentCaptor.getValue().isHidden());
+            assertEquals(ESTIMATED_READING_TIME, argumentCaptor.getValue().getEstimatedReadingTime());
         }
 
         @Test
@@ -102,7 +105,7 @@ class ArticleServiceTest {
 
         private static ArticleCreationRequest getRequest() {
             return ArticleCreationRequest.builder().categoryId(CATEGORY_ID).title(TITLE).content(CONTENT).description(DESCRIPTION)
-                    .thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).hidden(HIDDEN).build();
+                    .thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).hidden(HIDDEN).estimatedReadingTime(ESTIMATED_READING_TIME).build();
         }
     }
 
@@ -137,7 +140,7 @@ class ArticleServiceTest {
             assertEquals(CREATED_DATE, article.getCreatedDate());
             assertEquals(LAST_MODIFIED_DATE, article.getLastModifiedDate());
             assertEquals(HIDDEN, article.isHidden());
-
+            assertEquals(ESTIMATED_READING_TIME, article.getEstimatedReadingTime());
         }
     }
 
@@ -182,20 +185,21 @@ class ArticleServiceTest {
             Article updatedArticle = Article.builder().id(ARTICLE_ID).categoryId(UPDATED_CATEGORY_ID).title(UPDATED_TITLE)
                     .content(UPDATED_CONTENT).description(UPDATED_DESCRIPTION).thumbnailImageUrl(UPDATED_THUMBNAIL_IMAGE_URL)
                     .keywords(List.of(UPDATED_KEYWORD)).version(VERSION).createdDate(CREATED_DATE).lastModifiedDate(LAST_MODIFIED_DATE)
-                    .hidden(UPDATED_HIDDEN).build();
+                    .hidden(UPDATED_HIDDEN).estimatedReadingTime(UPDATED_ESTIMATED_READING_TIME).build();
             verify(storage).save(updatedArticle);
         }
 
         private static ArticleUpdateRequest getRequest() {
             return ArticleUpdateRequest.builder().id(ARTICLE_ID).categoryId(UPDATED_CATEGORY_ID).title(UPDATED_TITLE)
                     .content(UPDATED_CONTENT).description(UPDATED_DESCRIPTION).thumbnailImageUrl(UPDATED_THUMBNAIL_IMAGE_URL)
-                    .keywords(List.of(UPDATED_KEYWORD)).hidden(UPDATED_HIDDEN).build();
+                    .keywords(List.of(UPDATED_KEYWORD)).hidden(UPDATED_HIDDEN).estimatedReadingTime(UPDATED_ESTIMATED_READING_TIME).build();
         }
     }
 
     private Article getArticle() {
         return Article.builder().id(ARTICLE_ID).title(TITLE).description(DESCRIPTION).content(CONTENT)
                 .categoryId(CATEGORY_ID).thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD))
-                .version(VERSION).createdDate(CREATED_DATE).lastModifiedDate(LAST_MODIFIED_DATE).hidden(true).build();
+                .version(VERSION).createdDate(CREATED_DATE).lastModifiedDate(LAST_MODIFIED_DATE).hidden(true)
+                .estimatedReadingTime(ESTIMATED_READING_TIME).build();
     }
 }

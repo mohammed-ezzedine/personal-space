@@ -8,8 +8,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 public class ArticleApiModel extends ArticleSummaryApiModel {
-
     private String content;
-
-
 }

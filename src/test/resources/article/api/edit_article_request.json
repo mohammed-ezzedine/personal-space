@@ -5,5 +5,6 @@
   "categoryId": "updatedArticleCategoryId",
   "thumbnailImageUrl": "updatedArticleThumbnailImageUrl",
   "keywords": ["updatedArticleKeyword"],
-  "hidden": true
+  "hidden": true,
+  "estimatedReadingTime": "updatedEstimatedReadingTime"
 }

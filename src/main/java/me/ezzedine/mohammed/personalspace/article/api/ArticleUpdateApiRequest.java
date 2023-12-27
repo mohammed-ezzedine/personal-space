@@ -19,4 +19,5 @@ public class ArticleUpdateApiRequest {
     private String thumbnailImageUrl;
     private List<String> keywords;
     private Boolean hidden;
+    private String estimatedReadingTime;
 }

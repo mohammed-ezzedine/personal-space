@@ -17,6 +17,7 @@ public class ArticleUpdateRequest {
     private String thumbnailImageUrl;
     private List<String> keywords;
     private Boolean hidden;
+    private String estimatedReadingTime;
 
     public Optional<String> getTitle() {
         return Optional.ofNullable(title);
@@ -44,5 +45,9 @@ public class ArticleUpdateRequest {
 
     public Optional<Boolean> getHidden() {
         return Optional.ofNullable(hidden);
+    }
+
+    public Optional<String> getEstimatedReadingTime() {
+        return Optional.ofNullable(estimatedReadingTime);
     }
 }

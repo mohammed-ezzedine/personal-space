@@ -41,6 +41,7 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
     public static final String THUMBNAIL_IMAGE_URL = UUID.randomUUID().toString();
     public static final String KEYWORD = UUID.randomUUID().toString();
     public static final boolean HIDDEN = true;
+    public static final String ESTIMATED_READING_TIME = UUID.randomUUID().toString();
     @Autowired
     private ArticleMongoRepository repository;
 
@@ -74,6 +75,7 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(THUMBNAIL_IMAGE_URL, allArticles.get(0).getThumbnailImageUrl());
             assertEquals(List.of(KEYWORD), allArticles.get(0).getKeywords());
             assertEquals(HIDDEN, allArticles.get(0).isHidden());
+            assertEquals(ESTIMATED_READING_TIME, allArticles.get(0).getEstimatedReadingTime());
         }
 
         @Test
@@ -108,6 +110,7 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(THUMBNAIL_IMAGE_URL, allArticles.get(0).getThumbnailImageUrl());
             assertEquals(List.of(KEYWORD), allArticles.get(0).getKeywords());
             assertEquals(HIDDEN, allArticles.get(0).isHidden());
+            assertEquals(ESTIMATED_READING_TIME, allArticles.get(0).getEstimatedReadingTime());
         }
 
         @Test
@@ -145,12 +148,12 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
         private static ArticleEntity getRandomArticleEntity() {
             return ArticleEntity.builder().id(ID).title(UUID.randomUUID().toString()).categoryId(UUID.randomUUID().toString())
                     .content(UUID.randomUUID().toString()).description(UUID.randomUUID().toString()).thumbnailImageUrl(UUID.randomUUID().toString())
-                    .keywords(List.of(UUID.randomUUID().toString())).hidden(false).build();
+                    .keywords(List.of(UUID.randomUUID().toString())).hidden(false).estimatedReadingTime(UUID.randomUUID().toString()).build();
         }
 
         private Article getArticle() {
             return Article.builder().id(ID).categoryId(CATEGORY_ID).title(TITLE).description(DESCRIPTION).content(CONTENT)
-                    .thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).hidden(HIDDEN).build();
+                    .thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).hidden(HIDDEN).estimatedReadingTime(ESTIMATED_READING_TIME).build();
         }
     }
 
@@ -181,6 +184,7 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertNotNull(optionalArticle.get().getCreatedDate());
             assertNotNull(optionalArticle.get().getLastModifiedDate());
             assertEquals(HIDDEN, optionalArticle.get().isHidden());
+            assertEquals(ESTIMATED_READING_TIME, optionalArticle.get().getEstimatedReadingTime());
         }
     }
 
@@ -218,6 +222,7 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
                 assertNotNull(articles.getItems().get(0).getCreatedDate());
                 assertNotNull(articles.getItems().get(0).getLastModifiedDate());
                 assertEquals(HIDDEN, articles.getItems().get(0).isHidden());
+                assertEquals(ESTIMATED_READING_TIME, articles.getItems().get(0).getEstimatedReadingTime());
             }
 
             @Test
@@ -434,7 +439,7 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             }
 
             private ArticleEntity getEntity(String id, String categoryId) {
-                return ArticleEntity.builder().id(id).categoryId(categoryId).title(TITLE).description(DESCRIPTION)
+                return ArticleEntity.builder().id(id).categoryId(categoryId).title(TITLE).description(DESCRIPTION).estimatedReadingTime(ESTIMATED_READING_TIME)
                         .content(CONTENT).thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).hidden(HIDDEN).build();
             }
         }
@@ -495,7 +500,8 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
 
     private ArticleEntity getEntity(String id) {
         return ArticleEntity.builder().id(id).categoryId(CATEGORY_ID).title(TITLE).description(DESCRIPTION)
-                .content(CONTENT).thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).hidden(HIDDEN).build();
+                .content(CONTENT).thumbnailImageUrl(THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD)).hidden(HIDDEN)
+                .estimatedReadingTime(ESTIMATED_READING_TIME).build();
     }
 
     private ArticleEntity getEntity() {
