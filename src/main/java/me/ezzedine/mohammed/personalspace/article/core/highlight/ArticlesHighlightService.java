@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +36,7 @@ public class ArticlesHighlightService implements ArticlesHighlightUpdater, Artic
     public void addArticleToHighlights(String articleId) throws ArticleAlreadyHighlightedException, ArticleNotFoundException {
         validateArticleExists(articleId);
 
-        List<HighlightedArticle> highlightedArticles = new ArrayList<>(highlightStorage.getHighlightedArticles());
+        List<HighlightedArticle> highlightedArticles = new ArrayList<>(highlightStorage.getArticleHighlightsSummary());
         if (articleIsHighlighted(articleId, highlightedArticles)) {
             throw new ArticleAlreadyHighlightedException(articleId);
         }
@@ -50,7 +49,7 @@ public class ArticlesHighlightService implements ArticlesHighlightUpdater, Artic
     public void removeArticleFromHighlights(String articleId) throws ArticleWasNotHighlightedException, ArticleNotFoundException {
         validateArticleExists(articleId);
 
-        List<HighlightedArticle> highlightedArticles = new ArrayList<>(highlightStorage.getHighlightedArticles());
+        List<HighlightedArticle> highlightedArticles = new ArrayList<>(highlightStorage.getArticleHighlightsSummary());
         if(!articleIsHighlighted(articleId, highlightedArticles)) {
             throw new ArticleWasNotHighlightedException(articleId);
         }
@@ -61,17 +60,12 @@ public class ArticlesHighlightService implements ArticlesHighlightUpdater, Artic
 
     @Override
     public List<Article> getHighlightedArticles() {
-        List<HighlightedArticle> highlightedArticlesIds = highlightStorage.getHighlightedArticles();
-        return highlightedArticlesIds.stream()
-                .map(a -> articleStorage.fetch(a.getArticleId()))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
+        return articleStorage.fetchHighlightedArticles();
     }
 
     @Override
     public List<HighlightedArticle> getHighlightedArticlesSummary() {
-        return highlightStorage.getHighlightedArticles();
+        return highlightStorage.getArticleHighlightsSummary();
     }
 
     private void validateArticleExists(String articleId) throws ArticleNotFoundException {

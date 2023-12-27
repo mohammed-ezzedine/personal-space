@@ -77,7 +77,7 @@ class ArticlesHighlightStorageManagerIntegrationTest extends DatabaseIntegration
         @Test
         @DisplayName("should return an empty list when no article is highlighted")
         void should_return_an_empty_list_when_no_article_is_highlighted() {
-            List<HighlightedArticle> highlightedArticles = storageManager.getHighlightedArticles();
+            List<HighlightedArticle> highlightedArticles = storageManager.getArticleHighlightsSummary();
             assertTrue(highlightedArticles.isEmpty());
         }
 
@@ -86,7 +86,7 @@ class ArticlesHighlightStorageManagerIntegrationTest extends DatabaseIntegration
         void should_return_the_list_of_highlighted_articles_in_increasing_order_of_rank() {
             repository.saveAll(List.of(getEntity(FIRST_ARTICLE_ID, THIRD_RANK), getEntity(SECOND_ARTICLE_ID, SECOND_RANK)));
 
-            List<HighlightedArticle> highlightedArticles = storageManager.getHighlightedArticles();
+            List<HighlightedArticle> highlightedArticles = storageManager.getArticleHighlightsSummary();
             assertEquals(2, highlightedArticles.size());
             assertEquals(SECOND_ARTICLE_ID, highlightedArticles.get(0).getArticleId());
             assertEquals(SECOND_RANK, highlightedArticles.get(0).getHighlightRank());

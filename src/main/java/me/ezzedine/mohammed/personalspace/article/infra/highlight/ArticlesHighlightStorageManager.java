@@ -21,7 +21,7 @@ public class ArticlesHighlightStorageManager implements ArticlesHighlightStorage
     }
 
     @Override
-    public List<HighlightedArticle> getHighlightedArticles() {
+    public List<HighlightedArticle> getArticleHighlightsSummary() {
         return repository.findAll().stream()
                 .sorted(Comparator.comparing(HighlightedArticleEntity::getRank))
                 .map(ArticlesHighlightStorageManager::fromEntity).toList();

@@ -16,8 +16,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -41,7 +42,17 @@ public class ArticleStorageManager implements ArticleStorage {
     public Page<Article> fetchAll(ArticlesFetchCriteria criteria) {
         Query query = new Query();
 
-        criteria.getHighlighted().ifPresent(highlighted -> addHighlightFilter(highlighted, query));
+        criteria.getHighlighted().ifPresent(highlighted -> {
+            List<String> highlightedArticlesIds = highlightedArticleRepository.findAll().stream()
+                    .map(HighlightedArticleEntity::getArticleId)
+                    .toList();
+
+            if (highlighted) {
+                query.addCriteria(Criteria.where("id").in(highlightedArticlesIds));
+            } else {
+                query.addCriteria(Criteria.where("id").nin(highlightedArticlesIds));
+            }
+        });
 
         criteria.getCategoryId().ifPresent(categoryId -> query.addCriteria(Criteria.where("categoryId").is(categoryId)));
 
@@ -57,22 +68,28 @@ public class ArticleStorageManager implements ArticleStorage {
         return Page.<Article>builder().items(articles).totalSize(totalNumberOfArticlesMatchingCriteria).build();
     }
 
+    @Override
+    public List<Article> fetchHighlightedArticles() {
+        List<String> highlightedArticlesIds = highlightedArticleRepository.findAll().stream()
+                .sorted(Comparator.comparing(HighlightedArticleEntity::getRank))
+                .map(HighlightedArticleEntity::getArticleId).toList();
+
+        Map<String, ArticleEntity> highlightedArticlesEntity = repository.findAllById(highlightedArticlesIds)
+                .stream().collect(Collectors.toMap(ArticleEntity::getId, Function.identity()));
+
+        return highlightedArticlesIds.stream()
+                .map(highlightedArticlesEntity::get)
+                .filter(Objects::nonNull)
+                .map(ArticleStorageManager::fromEntity)
+                .toList();
+    }
+
     private static void addSoringCriteria(SortingCriteria sortingCriteria, Query query) {
         query.with(Sort.by(sortingCriteria.isAscendingOrder() ? Sort.Direction.ASC : Sort.Direction.DESC, sortingCriteria.getField()));
     }
 
     private static void addPaginationCriteria(PaginationCriteria paginationCriteria, Query query) {
         query.with(PageRequest.of(paginationCriteria.getStartingPageIndex(), paginationCriteria.getMaximumPageSize()));
-    }
-
-    private void addHighlightFilter(Boolean highlighted, Query query) {
-        List<String> highlightedArticlesIds = highlightedArticleRepository.findAll().stream().map(HighlightedArticleEntity::getArticleId).toList();
-
-        if (highlighted) {
-            query.addCriteria(Criteria.where("id").in(highlightedArticlesIds));
-        } else {
-            query.addCriteria(Criteria.where("id").nin(highlightedArticlesIds));
-        }
     }
 
     private static ArticleEntity toEntity(Article article) {

@@ -35,7 +35,7 @@ class ArticlesHighlightServiceTest {
         service = new ArticlesHighlightService(highlightStorage, articleStorage);
 
         when(articleStorage.fetch(any())).thenReturn(Optional.of(mock(Article.class)));
-        when(highlightStorage.getHighlightedArticles()).thenReturn(List.of(getArticle(FIRST_ARTICLE_ID, FIRST_RANK), getArticle(SECOND_ARTICLE_ID, SECOND_RANK)));
+        when(highlightStorage.getArticleHighlightsSummary()).thenReturn(List.of(getArticle(FIRST_ARTICLE_ID, FIRST_RANK), getArticle(SECOND_ARTICLE_ID, SECOND_RANK)));
     }
 
     @Nested
@@ -132,36 +132,13 @@ class ArticlesHighlightServiceTest {
     @DisplayName("When fetching the list of highlighted articles")
     class FetchingHighlightedArticlesTest {
         @Test
-        @DisplayName("should return an empty list when no articles are highlighted")
-        void should_return_an_empty_list_when_no_articles_are_highlighted() {
-            when(highlightStorage.getHighlightedArticles()).thenReturn(Collections.emptyList());
-            assertTrue(service.getHighlightedArticles().isEmpty());
-        }
-
-        @Test
-        @DisplayName("should return the details of the highlighted articles")
-        void should_return_the_details_of_the_highlighted_articles() {
-            Article firstArticle = mock(Article.class);
-            Article secondArticle = mock(Article.class);
-            when(articleStorage.fetch(FIRST_ARTICLE_ID)).thenReturn(Optional.of(firstArticle));
-            when(articleStorage.fetch(SECOND_ARTICLE_ID)).thenReturn(Optional.of(secondArticle));
-
-            List<Article> highlightedArticles = service.getHighlightedArticles();
-            assertEquals(2, highlightedArticles.size());
-            assertEquals(firstArticle, highlightedArticles.get(0));
-            assertEquals(secondArticle, highlightedArticles.get(1));
-        }
-
-        @Test
-        @DisplayName("should skip articles that are not found")
-        void should_skip_articles_that_are_not_found() {
-            Article firstArticle = mock(Article.class);
-            when(articleStorage.fetch(FIRST_ARTICLE_ID)).thenReturn(Optional.of(firstArticle));
-            when(articleStorage.fetch(SECOND_ARTICLE_ID)).thenReturn(Optional.empty());
-
+        @DisplayName("should delegate to the storage")
+        void should_delegate_to_the_storage() {
+            Article article = mock(Article.class);
+            when(articleStorage.fetchHighlightedArticles()).thenReturn(List.of(article));
             List<Article> highlightedArticles = service.getHighlightedArticles();
             assertEquals(1, highlightedArticles.size());
-            assertEquals(firstArticle, highlightedArticles.get(0));
+            assertEquals(article, highlightedArticles.get(0));
         }
     }
 
@@ -171,7 +148,7 @@ class ArticlesHighlightServiceTest {
         @Test
         @DisplayName("should return an empty list when no articles are highlighted")
         void should_return_an_empty_list_when_no_articles_are_highlighted() {
-            when(highlightStorage.getHighlightedArticles()).thenReturn(Collections.emptyList());
+            when(highlightStorage.getArticleHighlightsSummary()).thenReturn(Collections.emptyList());
             assertTrue(service.getHighlightedArticlesSummary().isEmpty());
         }
 

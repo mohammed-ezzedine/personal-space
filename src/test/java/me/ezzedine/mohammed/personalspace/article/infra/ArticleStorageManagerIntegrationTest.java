@@ -318,9 +318,8 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             @DisplayName("should return an empty list when no article exists")
             void should_return_an_empty_list_when_no_article_exists() {
                 when(highlightedArticleRepository.findAll()).thenReturn(Collections.emptyList());
-                Page<Article> articles = storageManager.fetchAll(ArticlesFetchCriteria.builder().highlighted(true).build());
-                assertEquals(0, articles.getTotalSize());
-                assertEquals(0, articles.getItems().size());
+                List<Article> articles = storageManager.fetchHighlightedArticles();
+                assertEquals(0, articles.size());
             }
 
             @Test
@@ -332,9 +331,8 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
                 String secondArticleId = UUID.randomUUID().toString();
                 repository.save(getEntity(secondArticleId));
 
-                Page<Article> articles = storageManager.fetchAll(ArticlesFetchCriteria.builder().highlighted(true).build());
-                assertEquals(0, articles.getTotalSize());
-                assertEquals(0, articles.getItems().size());
+                List<Article> articles = storageManager.fetchHighlightedArticles();
+                assertEquals(0, articles.size());
             }
 
             @Test
@@ -345,10 +343,23 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
                 String secondArticleId = UUID.randomUUID().toString();
                 repository.save(getEntity(secondArticleId));
                 when(highlightedArticleRepository.findAll()).thenReturn(List.of(getHighlightedArticle(secondArticleId)));
-                Page<Article> articles = storageManager.fetchAll(ArticlesFetchCriteria.builder().highlighted(true).build());
-                assertEquals(1, articles.getTotalSize());
-                assertEquals(1, articles.getItems().size());
-                assertEquals(secondArticleId, articles.getItems().get(0).getId());
+                List<Article> articles = storageManager.fetchHighlightedArticles();
+                assertEquals(1, articles.size());
+                assertEquals(secondArticleId, articles.get(0).getId());
+            }
+
+            @Test
+            @DisplayName("should sort the highlighted articles in the increasing order of their rank")
+            void should_sort_the_highlighted_articles_in_the_increasing_order_of_their_rank() {
+                String firstArticleId = UUID.randomUUID().toString();
+                repository.save(getEntity(firstArticleId));
+                String secondArticleId = UUID.randomUUID().toString();
+                repository.save(getEntity(secondArticleId));
+                when(highlightedArticleRepository.findAll()).thenReturn(List.of(getHighlightedArticle(firstArticleId, 2), getHighlightedArticle(secondArticleId, 1)));
+                List<Article> articles = storageManager.fetchHighlightedArticles();
+                assertEquals(2, articles.size());
+                assertEquals(secondArticleId, articles.get(0).getId());
+                assertEquals(firstArticleId, articles.get(1).getId());
             }
         }
 
@@ -475,6 +486,10 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
 
         private static HighlightedArticleEntity getHighlightedArticle(String firstArticleId) {
             return HighlightedArticleEntity.builder().articleId(firstArticleId).build();
+        }
+
+        private static HighlightedArticleEntity getHighlightedArticle(String firstArticleId, int rank) {
+            return HighlightedArticleEntity.builder().articleId(firstArticleId).rank(rank).build();
         }
     }
 
