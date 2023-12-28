@@ -11,13 +11,19 @@ spring:
       client:
         registration:
           keycloak:
-            client-id: ${SECURITY_CLIENT_ID:web}
+            client-id: ${SECURITY_CLIENT_ID:personal-space-web}
             authorization-grant-type: ${SECURITY_GRANT_TYPE:authorization_code}
-            scope: ${SECURITY_SCOPE:profile}
+            scope: ${SECURITY_SCOPE:openid}
         provider:
           keycloak:
-            issuer-uri: ${SECURITY_ISSUER_ID:http://localhost:8081/realms/testing}
+            issuer-uri: ${SECURITY_ISSUER_ID:https://lemur-1.cloud-iam.com/auth/realms/mezzedine-auth-server}
             user-name-attribute: ${SECURITY_USERNAME_ATTRIBUTE:preferred_username}
       resourceserver:
         jwt:
-          issuer-uri: ${SECURITY_ISSUER_ID:http://localhost:8081/realms/testing}
+          issuer-uri: ${SECURITY_ISSUER_ID:https://lemur-1.cloud-iam.com/auth/realms/mezzedine-auth-server}
+
+article:
+  id:
+    hash:
+      salt: salt
+      size: 8

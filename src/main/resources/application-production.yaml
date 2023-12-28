@@ -24,3 +24,10 @@ spring:
 
 server:
   forward-headers-strategy: native
+
+
+article:
+  id:
+    hash:
+      salt: ${ARTICLE_ID_HASHING_SALT}
+      size: ${ARTICLE_ID_HASHING_LENGTH:8}
