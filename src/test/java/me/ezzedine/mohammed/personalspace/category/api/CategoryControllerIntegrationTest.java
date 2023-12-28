@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         CategoryDeletionRejectedAdvice.class
 })
 @EnableWebMvc
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class CategoryControllerIntegrationTest {
 
     @Autowired

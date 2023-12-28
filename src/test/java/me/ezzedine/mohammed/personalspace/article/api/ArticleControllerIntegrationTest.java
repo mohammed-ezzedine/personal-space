@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         ArticleNotFoundAdvice.class
 })
 @EnableWebMvc
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class ArticleControllerIntegrationTest {
 
     @Autowired
