@@ -63,7 +63,7 @@ class ArticleControllerIntegrationTest {
             void should_return_a_success_status_code_with_the_details_of_the_articles() throws Exception {
                 Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
                 PaginationCriteria paginationCriteria = PaginationCriteria.builder().maximumPageSize(13).startingPageIndex(2).build();
-                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().paginationCriteria(paginationCriteria).build())).thenReturn(page);
+                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().paginationCriteria(paginationCriteria).hidden(false).build())).thenReturn(page);
 
                 String response = mockMvc.perform(get("/articles")
                                 .param("page", "2")
@@ -79,7 +79,7 @@ class ArticleControllerIntegrationTest {
             void should_default_the_page_size_to_10_articles_if_the_user_specified_the_page_index_but_not_its_size() throws Exception {
                 Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
                 PaginationCriteria paginationCriteria = PaginationCriteria.builder().maximumPageSize(10).startingPageIndex(2).build();
-                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().paginationCriteria(paginationCriteria).build())).thenReturn(page);
+                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().paginationCriteria(paginationCriteria).hidden(false).build())).thenReturn(page);
 
                 String response = mockMvc.perform(get("/articles")
                                 .param("page", "2"))
@@ -97,7 +97,7 @@ class ArticleControllerIntegrationTest {
             @DisplayName("should return a success status code with the details of the articles")
             void should_return_a_success_status_code_with_the_details_of_the_articles() throws Exception {
                 Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
-                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().highlighted(true).build())).thenReturn(page);
+                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().hidden(false).highlighted(true).build())).thenReturn(page);
 
                 String response = mockMvc.perform(get("/articles")
                                 .param("highlighted", "true"))
@@ -117,7 +117,7 @@ class ArticleControllerIntegrationTest {
             void should_return_a_success_status_code_with_the_details_of_the_articles() throws Exception {
                 Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
                 SortingCriteria sortingCriteria = SortingCriteria.builder().field("createdDate").ascendingOrder(false).build();
-                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().sortingCriteria(sortingCriteria).build())).thenReturn(page);
+                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().hidden(false).sortingCriteria(sortingCriteria).build())).thenReturn(page);
 
                 String response = mockMvc.perform(get("/articles")
                                 .param("sortBy", "createdDate")
@@ -133,7 +133,7 @@ class ArticleControllerIntegrationTest {
             void should_default_to_the_ascending_order_sorting_when_not_mentioned() throws Exception {
                 Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
                 SortingCriteria sortingCriteria = SortingCriteria.builder().field("createdDate").ascendingOrder(true).build();
-                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().sortingCriteria(sortingCriteria).build())).thenReturn(page);
+                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().hidden(false).sortingCriteria(sortingCriteria).build())).thenReturn(page);
 
                 String response = mockMvc.perform(get("/articles")
                                 .param("sortBy", "createdDate"))

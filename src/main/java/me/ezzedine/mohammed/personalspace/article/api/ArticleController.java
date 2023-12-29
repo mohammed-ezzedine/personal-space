@@ -9,9 +9,12 @@ import me.ezzedine.mohammed.personalspace.util.pagination.PaginationCriteria;
 import me.ezzedine.mohammed.personalspace.util.sort.SortingCriteria;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static me.ezzedine.mohammed.personalspace.article.api.ArticleApiMapper.toApiModel;
@@ -26,9 +29,10 @@ public class ArticleController implements ArticleApi {
     private final ArticleEditor articleEditor;
 
     @Override
-    public ResponseEntity<Page<ArticleSummaryApiModel>> getArticles(ArticlesFetchApiCriteria fetchCriteria) {
+    public ResponseEntity<Page<ArticleSummaryApiModel>> getArticles(ArticlesFetchApiCriteria fetchCriteria, Principal principal) {
         log.info("Received a request to fetch the article details with fetch criteria {}", fetchCriteria);
-        Page<Article> articlesPage = articleFetcher.fetchAll(getFetchCriteria(fetchCriteria));
+        ArticlesFetchCriteria domainFetchCriteria = getFetchCriteria(fetchCriteria, principal);
+        Page<Article> articlesPage = articleFetcher.fetchAll(domainFetchCriteria);
         List<ArticleSummaryApiModel> articlesApiModels = articlesPage.getItems().stream()
                 .map(ArticleApiMapper::toSummaryApiModel).collect(Collectors.toList());
         Page<ArticleSummaryApiModel> articlesApiModelPage = Page.<ArticleSummaryApiModel>builder().totalSize(articlesPage.getTotalSize()).items(articlesApiModels).build();
@@ -57,7 +61,12 @@ public class ArticleController implements ArticleApi {
         return ResponseEntity.ok().build();
     }
 
-    private static ArticlesFetchCriteria getFetchCriteria(ArticlesFetchApiCriteria fetchCriteria) {
+    private static boolean isAdmin(Principal principal) {
+        JwtAuthenticationToken token = (JwtAuthenticationToken) principal;
+        return Optional.ofNullable(token).map(u -> u.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("admin"))).orElse(false);
+    }
+
+    private static ArticlesFetchCriteria getFetchCriteria(ArticlesFetchApiCriteria fetchCriteria, Principal principal) {
         ArticlesFetchCriteria criteria = ArticlesFetchCriteria.builder().highlighted(fetchCriteria.getHighlighted()).build();
         if (fetchCriteria.getPage().isPresent()) {
             PaginationCriteria paginationCriteria = PaginationCriteria.builder().startingPageIndex(fetchCriteria.getPage().get()).maximumPageSize(fetchCriteria.getSize().orElse(10)).build();
@@ -67,6 +76,11 @@ public class ArticleController implements ArticleApi {
         if (fetchCriteria.getSortBy().isPresent()) {
             SortingCriteria sortingCriteria = SortingCriteria.builder().field(fetchCriteria.getSortBy().get()).ascendingOrder(fetchCriteria.getAscOrder().orElse(true)).build();
             criteria.setSortingCriteria(sortingCriteria);
+        }
+
+        if (!isAdmin(principal)) {
+            // TODO add test
+            criteria.setHidden(false);
         }
 
         return criteria;

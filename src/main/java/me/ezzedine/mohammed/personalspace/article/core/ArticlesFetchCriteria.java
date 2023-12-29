@@ -14,6 +14,7 @@ public class ArticlesFetchCriteria {
     private SortingCriteria sortingCriteria;
     private Boolean highlighted;
     private String categoryId;
+    private Boolean hidden;
 
     public Optional<PaginationCriteria> getPaginationCriteria() {
         return Optional.ofNullable(paginationCriteria);
@@ -29,5 +30,9 @@ public class ArticlesFetchCriteria {
 
     public Optional<SortingCriteria> getSortingCriteria() {
         return Optional.ofNullable(sortingCriteria);
+    }
+
+    public Optional<Boolean> getHidden() {
+        return Optional.ofNullable(hidden);
     }
 }

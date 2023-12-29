@@ -7,11 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RequestMapping("articles")
 public interface ArticleApi {
 
     @GetMapping
-    ResponseEntity<Page<ArticleSummaryApiModel>> getArticles(ArticlesFetchApiCriteria fetchCriteria);
+    ResponseEntity<Page<ArticleSummaryApiModel>> getArticles(ArticlesFetchApiCriteria fetchCriteria, Principal principal);
 
     @GetMapping("{id}")
     ResponseEntity<ArticleApiModel> getArticle(@PathVariable String id) throws ArticleNotFoundException;

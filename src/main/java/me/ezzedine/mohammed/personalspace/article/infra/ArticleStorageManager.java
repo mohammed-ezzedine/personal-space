@@ -54,6 +54,8 @@ public class ArticleStorageManager implements ArticleStorage {
             }
         });
 
+        criteria.getHidden().ifPresent(hidden -> query.addCriteria(Criteria.where("hidden").is(hidden)));
+
         criteria.getCategoryId().ifPresent(categoryId -> query.addCriteria(Criteria.where("categoryId").is(categoryId)));
 
         long totalNumberOfArticlesMatchingCriteria = mongoTemplate.count(query, ArticleEntity.class);

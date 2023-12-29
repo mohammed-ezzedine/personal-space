@@ -445,6 +445,98 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
         }
 
         @Nested
+        @DisplayName("When filtering on the hidden articles")
+        class FetchHiddenArticlesIntegrationTest {
+
+            @Test
+            @DisplayName("should return an empty list when no article exist")
+            void should_return_an_empty_list_when_no_article_exist() {
+                ArticlesFetchCriteria criteria = ArticlesFetchCriteria.builder().hidden(true).build();
+                Page<Article> articlePage = storageManager.fetchAll(criteria);
+                assertEquals(0, articlePage.getTotalSize());
+                assertEquals(0, articlePage.getItems().size());
+            }
+
+            @Test
+            @DisplayName("should return an empty list when no article is hidden")
+            void should_return_an_empty_list_when_no_article_is_hidden() {
+                ArticleEntity entity = getEntity();
+                entity.setHidden(false);
+                repository.save(entity);
+
+                ArticlesFetchCriteria criteria = ArticlesFetchCriteria.builder().hidden(true).build();
+                Page<Article> articlePage = storageManager.fetchAll(criteria);
+                assertEquals(0, articlePage.getTotalSize());
+                assertEquals(0, articlePage.getItems().size());
+            }
+
+            @Test
+            @DisplayName("should return the hidden articles")
+            void should_return_the_hidden_articles() {
+                String hiddenArticleId = UUID.randomUUID().toString();
+                ArticleEntity hiddenArticle = getEntity(hiddenArticleId);
+                hiddenArticle.setHidden(true);
+                String visibileArticleId = UUID.randomUUID().toString();
+                ArticleEntity visibileArticle = getEntity(visibileArticleId);
+                visibileArticle.setHidden(false);
+                repository.save(hiddenArticle);
+                repository.save(visibileArticle);
+
+                ArticlesFetchCriteria criteria = ArticlesFetchCriteria.builder().hidden(true).build();
+                Page<Article> articlePage = storageManager.fetchAll(criteria);
+                assertEquals(1, articlePage.getTotalSize());
+                assertEquals(1, articlePage.getItems().size());
+                assertEquals(hiddenArticleId, articlePage.getItems().get(0).getId());
+            }
+        }
+
+        @Nested
+        @DisplayName("When filtering on the visible articles")
+        class FetchVisibleArticlesIntegrationTest {
+
+            @Test
+            @DisplayName("should return an empty list when no article exist")
+            void should_return_an_empty_list_when_no_article_exist() {
+                ArticlesFetchCriteria criteria = ArticlesFetchCriteria.builder().hidden(false).build();
+                Page<Article> articlePage = storageManager.fetchAll(criteria);
+                assertEquals(0, articlePage.getTotalSize());
+                assertEquals(0, articlePage.getItems().size());
+            }
+
+            @Test
+            @DisplayName("should return an empty list when no article is visible")
+            void should_return_an_empty_list_when_no_article_is_visible() {
+                ArticleEntity entity = getEntity();
+                entity.setHidden(true);
+                repository.save(entity);
+
+                ArticlesFetchCriteria criteria = ArticlesFetchCriteria.builder().hidden(false).build();
+                Page<Article> articlePage = storageManager.fetchAll(criteria);
+                assertEquals(0, articlePage.getTotalSize());
+                assertEquals(0, articlePage.getItems().size());
+            }
+
+            @Test
+            @DisplayName("should return the visible articles")
+            void should_return_the_visible_articles() {
+                String hiddenArticleId = UUID.randomUUID().toString();
+                ArticleEntity hiddenArticle = getEntity(hiddenArticleId);
+                hiddenArticle.setHidden(true);
+                String visibileArticleId = UUID.randomUUID().toString();
+                ArticleEntity visibileArticle = getEntity(visibileArticleId);
+                visibileArticle.setHidden(false);
+                repository.save(hiddenArticle);
+                repository.save(visibileArticle);
+
+                ArticlesFetchCriteria criteria = ArticlesFetchCriteria.builder().hidden(false).build();
+                Page<Article> articlePage = storageManager.fetchAll(criteria);
+                assertEquals(1, articlePage.getTotalSize());
+                assertEquals(1, articlePage.getItems().size());
+                assertEquals(visibileArticleId, articlePage.getItems().get(0).getId());
+            }
+        }
+
+        @Nested
         @DisplayName("When sorting on a field")
         class FetchSortedArticlesIntegrationTest {
             @Test
