@@ -1,5 +1,6 @@
 package me.ezzedine.mohammed.personalspace.article.api;
 
+import me.ezzedine.mohammed.personalspace.SecurityTestConfiguration;
 import me.ezzedine.mohammed.personalspace.article.api.advice.ArticleNotFoundAdvice;
 import me.ezzedine.mohammed.personalspace.article.core.*;
 import me.ezzedine.mohammed.personalspace.category.api.advice.CategoryNotFoundAdvice;
@@ -15,7 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -23,7 +27,7 @@ import java.util.List;
 
 import static me.ezzedine.mohammed.personalspace.TestUtils.loadResource;
 import static me.ezzedine.mohammed.personalspace.article.api.ArticleApiTestUtil.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -32,8 +36,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = {
         ArticleController.class,
         CategoryNotFoundAdvice.class,
-        ArticleNotFoundAdvice.class
+        ArticleNotFoundAdvice.class,
 })
+@Import(SecurityTestConfiguration.class)
 @EnableWebMvc
 @AutoConfigureMockMvc(addFilters = false)
 class ArticleControllerIntegrationTest {
@@ -181,6 +186,40 @@ class ArticleControllerIntegrationTest {
         }
 
         @Test
+        @WithAnonymousUser
+        @DisplayName("un authenticated users cannot create articles")
+        void un_authenticated_users_cannot_create_articles() {
+            assertThrows(Exception.class, () -> mockMvc.perform(
+                    post("/articles")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(loadResource("article/api/create_article_request.json"))
+            ));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("authenticated users that are not admins cannot create articles")
+        void authenticated_users_that_are_not_admins_cannot_create_articles() {
+            assertThrows(Exception.class, () -> mockMvc.perform(
+                    post("/articles")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(loadResource("article/api/create_article_request.json"))
+            ));
+        }
+
+        @Test
+        @WithMockUser(authorities = "admin")
+        @DisplayName("only admins can create articles")
+        void only_admins_can_create_articles() {
+            assertDoesNotThrow(() -> mockMvc.perform(
+                    post("/articles")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(loadResource("article/api/create_article_request.json"))
+            ));
+        }
+
+        @Test
+        @WithMockUser(authorities = "admin")
         @DisplayName("should return a created success status on the happy path")
         void should_return_a_created_success_status_on_the_happy_path() throws Exception {
             mockMvc.perform(
@@ -196,6 +235,7 @@ class ArticleControllerIntegrationTest {
         }
 
         @Test
+        @WithMockUser(authorities = "admin")
         @DisplayName("should return a not found status code when the category id does not exist")
         void should_return_a_not_found_status_code_when_the_category_id_does_not_exist() throws Exception {
             when(articleCreator.create(any())).thenThrow(CategoryNotFoundException.class);
@@ -207,6 +247,7 @@ class ArticleControllerIntegrationTest {
         }
 
         @Test
+        @WithMockUser(authorities = "admin")
         @DisplayName("should return the newly created article id on the happy path")
         void should_return_the_newly_created_article_id_on_the_happy_path() throws Exception {
             String response = mockMvc.perform(
@@ -222,7 +263,42 @@ class ArticleControllerIntegrationTest {
     @Nested
     @DisplayName("When editing an article")
     class EditingArticleIntegrationTest {
+
         @Test
+        @WithAnonymousUser
+        @DisplayName("non authenticated users should not be able to edit an article")
+        void non_authenticated_users_should_not_be_able_to_edit_an_article() {
+            assertThrows(Exception.class, () -> mockMvc.perform(
+                    put("/articles/{id}", ARTICLE_ID)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(loadResource("article/api/edit_article_request.json"))
+            ));
+        }
+
+        @Test
+        @WithMockUser
+        @DisplayName("authenticated users that are not admins should not be able to edit an article")
+        void authenticated_users_that_are_not_admins_should_not_be_able_to_edit_an_article() {
+            assertThrows(Exception.class, () -> mockMvc.perform(
+                    put("/articles/{id}", ARTICLE_ID)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(loadResource("article/api/edit_article_request.json"))
+            ));
+        }
+
+        @Test
+        @WithMockUser(authorities = "admin")
+        @DisplayName("admins are allowed to edit articles")
+        void admins_are_allowed_to_edit_articles() throws Exception {
+            mockMvc.perform(
+                    put("/articles/{id}", ARTICLE_ID)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(loadResource("article/api/edit_article_request.json"))
+            ).andExpect(status().is2xxSuccessful());
+        }
+
+        @Test
+        @WithMockUser(authorities = "admin")
         @DisplayName("should return a success status on the happy path")
         void should_return_a_success_status_on_the_happy_path() throws Exception {
             mockMvc.perform(
@@ -239,6 +315,7 @@ class ArticleControllerIntegrationTest {
         }
 
         @Test
+        @WithMockUser(authorities = "admin")
         @DisplayName("should return a not found status when the article does not exist")
         void should_return_a_not_found_status_when_the_article_does_not_exist() throws Exception {
             doThrow(ArticleNotFoundException.class).when(articleEditor).edit(any());
@@ -251,6 +328,7 @@ class ArticleControllerIntegrationTest {
         }
 
         @Test
+        @WithMockUser(authorities = "admin")
         @DisplayName("should return a not found status when the chosen category does not exist")
         void should_return_a_not_found_status_when_the_chosen_category_does_not_exist() throws Exception {
             doThrow(CategoryNotFoundException.class).when(articleEditor).edit(any());

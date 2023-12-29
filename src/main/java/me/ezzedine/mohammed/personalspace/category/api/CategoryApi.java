@@ -4,8 +4,8 @@ import me.ezzedine.mohammed.personalspace.category.core.CategoryIdAlreadyExistsE
 import me.ezzedine.mohammed.personalspace.category.core.CategoryNotFoundException;
 import me.ezzedine.mohammed.personalspace.category.core.CategoryValidationViolationException;
 import me.ezzedine.mohammed.personalspace.category.core.deletion.CategoryDeletionRejectedException;
+import me.ezzedine.mohammed.personalspace.config.security.AdminAccess;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,14 +20,14 @@ public interface CategoryApi {
     ResponseEntity<CategorySummaryApiModel> fetchCategoryDetails(@PathVariable String id) throws CategoryNotFoundException;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('admin')")
+    @AdminAccess
     ResponseEntity<CategoryCreationResultApiModel> create(@RequestBody CategoryCreationRequest request) throws CategoryValidationViolationException, CategoryIdAlreadyExistsException;
 
     @PutMapping("orders")
-    @PreAuthorize("hasAuthority('admin')")
+    @AdminAccess
     ResponseEntity<Void> updateCategoriesOrders(@RequestBody UpdateCategoriesOrdersApiRequest request);
 
     @DeleteMapping("{id}")
-    @PreAuthorize("hasAuthority('admin')")
+    @AdminAccess
     ResponseEntity<Void> delete(@PathVariable String id) throws CategoryNotFoundException, CategoryDeletionRejectedException;
 }
