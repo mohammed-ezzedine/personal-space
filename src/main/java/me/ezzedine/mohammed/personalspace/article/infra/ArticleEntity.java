@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -25,9 +27,9 @@ public class ArticleEntity {
     private List<String> keywords;
     private boolean hidden;
     private String estimatedReadingTime;
-//    @CreatedDate
+    @CreatedDate
     private LocalDateTime createdDate;
-//    @LastModifiedDate
+    @LastModifiedDate
     private LocalDateTime lastModifiedDate;
     @Version
     private Long version;

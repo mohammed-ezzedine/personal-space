@@ -17,13 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = {
@@ -78,16 +78,16 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(ESTIMATED_READING_TIME, allArticles.get(0).getEstimatedReadingTime());
         }
 
-//        @Test
-//        @DisplayName("the stored article should have the current date as the value for its creation date")
-//        void the_stored_article_should_have_the_current_date_as_the_value_for_its_creation_date() {
-//            storageManager.save(getArticle());
-//
-//            List<ArticleEntity> allArticles = repository.findAll();
-//            assertEquals(1, allArticles.size());
-//            assertNotNull(allArticles.get(0).getCreatedDate());
-//            assertEquals(allArticles.get(0).getCreatedDate(), allArticles.get(0).getLastModifiedDate());
-//        }
+        @Test
+        @DisplayName("the stored article should have the current date as the value for its creation date")
+        void the_stored_article_should_have_the_current_date_as_the_value_for_its_creation_date() {
+            storageManager.save(getArticle());
+
+            List<ArticleEntity> allArticles = repository.findAll();
+            assertEquals(1, allArticles.size());
+            assertNotNull(allArticles.get(0).getCreatedDate());
+            assertEquals(allArticles.get(0).getCreatedDate(), allArticles.get(0).getLastModifiedDate());
+        }
 
         @Test
         @DisplayName("should override any existing article with the same id")
@@ -113,37 +113,37 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertEquals(ESTIMATED_READING_TIME, allArticles.get(0).getEstimatedReadingTime());
         }
 
-//        @Test
-//        @DisplayName("should update the last modified date when overriding an existing article")
-//        void should_update_the_last_modified_date_when_overriding_an_existing_article() {
-//            ArticleEntity entity = repository.save(getRandomArticleEntity());
-//
-//            Article article = getArticle();
-//            article.setVersion(entity.getVersion());
-//            article.setCreatedDate(entity.getCreatedDate());
-//            article.setLastModifiedDate(entity.getLastModifiedDate());
-//            storageManager.save(article);
-//
-//            List<ArticleEntity> allArticles = repository.findAll();
-//            assertEquals(1, allArticles.size());
-//            assertNotEquals(entity.getLastModifiedDate(), allArticles.get(0).getLastModifiedDate());
-//        }
+        @Test
+        @DisplayName("should update the last modified date when overriding an existing article")
+        void should_update_the_last_modified_date_when_overriding_an_existing_article() {
+            ArticleEntity entity = repository.save(getRandomArticleEntity());
 
-//        @Test
-//        @DisplayName("should not update the created date when overriding an existing article")
-//        void should_not_update_the_created_date_when_overriding_an_existing_article() {
-//            ArticleEntity entity = repository.save(getRandomArticleEntity());
-//
-//            Article article = getArticle();
-//            article.setVersion(entity.getVersion());
-//            article.setCreatedDate(entity.getCreatedDate());
-//            article.setLastModifiedDate(entity.getLastModifiedDate());
-//            storageManager.save(article);
-//
-//            List<ArticleEntity> allArticles = repository.findAll();
-//            assertEquals(1, allArticles.size());
-//            assertEquals(entity.getCreatedDate().truncatedTo(ChronoUnit.SECONDS), allArticles.get(0).getCreatedDate().truncatedTo(ChronoUnit.SECONDS));
-//        }
+            Article article = getArticle();
+            article.setVersion(entity.getVersion());
+            article.setCreatedDate(entity.getCreatedDate());
+            article.setLastModifiedDate(entity.getLastModifiedDate());
+            storageManager.save(article);
+
+            List<ArticleEntity> allArticles = repository.findAll();
+            assertEquals(1, allArticles.size());
+            assertNotEquals(entity.getLastModifiedDate(), allArticles.get(0).getLastModifiedDate());
+        }
+
+        @Test
+        @DisplayName("should not update the created date when overriding an existing article")
+        void should_not_update_the_created_date_when_overriding_an_existing_article() {
+            ArticleEntity entity = repository.save(getRandomArticleEntity());
+
+            Article article = getArticle();
+            article.setVersion(entity.getVersion());
+            article.setCreatedDate(entity.getCreatedDate());
+            article.setLastModifiedDate(entity.getLastModifiedDate());
+            storageManager.save(article);
+
+            List<ArticleEntity> allArticles = repository.findAll();
+            assertEquals(1, allArticles.size());
+            assertEquals(entity.getCreatedDate().truncatedTo(ChronoUnit.SECONDS), allArticles.get(0).getCreatedDate().truncatedTo(ChronoUnit.SECONDS));
+        }
 
         private static ArticleEntity getRandomArticleEntity() {
             return ArticleEntity.builder().id(ID).title(UUID.randomUUID().toString()).categoryId(UUID.randomUUID().toString())
@@ -168,24 +168,24 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
             assertTrue(optionalArticle.isEmpty());
         }
 
-//        @Test
-//        @DisplayName("it should return the article when it exists")
-//        void it_should_return_the_article_when_it_exists() {
-//            repository.save(getEntity());
-//            Optional<Article> optionalArticle = storageManager.fetch(ID);
-//            assertTrue(optionalArticle.isPresent());
-//            assertEquals(ID, optionalArticle.get().getId());
-//            assertEquals(DESCRIPTION, optionalArticle.get().getDescription());
-//            assertEquals(CONTENT, optionalArticle.get().getContent());
-//            assertEquals(TITLE, optionalArticle.get().getTitle());
-//            assertEquals(CATEGORY_ID, optionalArticle.get().getCategoryId());
-//            assertEquals(THUMBNAIL_IMAGE_URL, optionalArticle.get().getThumbnailImageUrl());
-//            assertEquals(List.of(KEYWORD), optionalArticle.get().getKeywords());
-//            assertNotNull(optionalArticle.get().getCreatedDate());
-//            assertNotNull(optionalArticle.get().getLastModifiedDate());
-//            assertEquals(HIDDEN, optionalArticle.get().isHidden());
-//            assertEquals(ESTIMATED_READING_TIME, optionalArticle.get().getEstimatedReadingTime());
-//        }
+        @Test
+        @DisplayName("it should return the article when it exists")
+        void it_should_return_the_article_when_it_exists() {
+            repository.save(getEntity());
+            Optional<Article> optionalArticle = storageManager.fetch(ID);
+            assertTrue(optionalArticle.isPresent());
+            assertEquals(ID, optionalArticle.get().getId());
+            assertEquals(DESCRIPTION, optionalArticle.get().getDescription());
+            assertEquals(CONTENT, optionalArticle.get().getContent());
+            assertEquals(TITLE, optionalArticle.get().getTitle());
+            assertEquals(CATEGORY_ID, optionalArticle.get().getCategoryId());
+            assertEquals(THUMBNAIL_IMAGE_URL, optionalArticle.get().getThumbnailImageUrl());
+            assertEquals(List.of(KEYWORD), optionalArticle.get().getKeywords());
+            assertNotNull(optionalArticle.get().getCreatedDate());
+            assertNotNull(optionalArticle.get().getLastModifiedDate());
+            assertEquals(HIDDEN, optionalArticle.get().isHidden());
+            assertEquals(ESTIMATED_READING_TIME, optionalArticle.get().getEstimatedReadingTime());
+        }
     }
 
     @Nested
@@ -205,25 +205,25 @@ class ArticleStorageManagerIntegrationTest extends DatabaseIntegrationTest {
                 assertTrue(articles.getItems().isEmpty());
             }
 
-//            @Test
-//            @DisplayName("should return all the articles when they are less than the size of the first page")
-//            void should_return_all_the_articles_when_they_are_less_than_the_size_of_the_first_page() {
-//                repository.save(getEntity());
-//                PaginationCriteria paginationCriteria = PaginationCriteria.builder().startingPageIndex(0).maximumPageSize(100).build();
-//                Page<Article> articles = storageManager.fetchAll(ArticlesFetchCriteria.builder().paginationCriteria(paginationCriteria).build());
-//                assertEquals(1, articles.getTotalSize());
-//                assertEquals(ID, articles.getItems().get(0).getId());
-//                assertEquals(TITLE, articles.getItems().get(0).getTitle());
-//                assertEquals(DESCRIPTION, articles.getItems().get(0).getDescription());
-//                assertEquals(CONTENT, articles.getItems().get(0).getContent());
-//                assertEquals(CATEGORY_ID, articles.getItems().get(0).getCategoryId());
-//                assertEquals(THUMBNAIL_IMAGE_URL, articles.getItems().get(0).getThumbnailImageUrl());
-//                assertEquals(List.of(KEYWORD), articles.getItems().get(0).getKeywords());
-//                assertNotNull(articles.getItems().get(0).getCreatedDate());
-//                assertNotNull(articles.getItems().get(0).getLastModifiedDate());
-//                assertEquals(HIDDEN, articles.getItems().get(0).isHidden());
-//                assertEquals(ESTIMATED_READING_TIME, articles.getItems().get(0).getEstimatedReadingTime());
-//            }
+            @Test
+            @DisplayName("should return all the articles when they are less than the size of the first page")
+            void should_return_all_the_articles_when_they_are_less_than_the_size_of_the_first_page() {
+                repository.save(getEntity());
+                PaginationCriteria paginationCriteria = PaginationCriteria.builder().startingPageIndex(0).maximumPageSize(100).build();
+                Page<Article> articles = storageManager.fetchAll(ArticlesFetchCriteria.builder().paginationCriteria(paginationCriteria).build());
+                assertEquals(1, articles.getTotalSize());
+                assertEquals(ID, articles.getItems().get(0).getId());
+                assertEquals(TITLE, articles.getItems().get(0).getTitle());
+                assertEquals(DESCRIPTION, articles.getItems().get(0).getDescription());
+                assertEquals(CONTENT, articles.getItems().get(0).getContent());
+                assertEquals(CATEGORY_ID, articles.getItems().get(0).getCategoryId());
+                assertEquals(THUMBNAIL_IMAGE_URL, articles.getItems().get(0).getThumbnailImageUrl());
+                assertEquals(List.of(KEYWORD), articles.getItems().get(0).getKeywords());
+                assertNotNull(articles.getItems().get(0).getCreatedDate());
+                assertNotNull(articles.getItems().get(0).getLastModifiedDate());
+                assertEquals(HIDDEN, articles.getItems().get(0).isHidden());
+                assertEquals(ESTIMATED_READING_TIME, articles.getItems().get(0).getEstimatedReadingTime());
+            }
 
             @Test
             @DisplayName("should return the first page only when there are more articles than the mentioned size")
