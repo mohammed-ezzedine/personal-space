@@ -148,6 +148,24 @@ class ArticleControllerIntegrationTest {
                 assertEquals(loadResource("article/api/all_articles_details_response.json"), response);
             }
         }
+
+        @Nested
+        @DisplayName("When filtering on the category id")
+        class FetchingArticlesByCategoryIdIntegrationTest {
+            @Test
+            @DisplayName("should return only the articles of the category")
+            void should_return_only_the_articles_of_the_category() throws Exception {
+                Page<Article> page = Page.<Article>builder().totalSize(14).items(List.of(getArticle())).build();
+                when(articleFetcher.fetchAll(ArticlesFetchCriteria.builder().hidden(false).categoryId("categoryId").build())).thenReturn(page);
+
+                String response = mockMvc.perform(get("/articles")
+                                .param("categoryId", "categoryId"))
+                        .andExpect(status().is2xxSuccessful())
+                        .andReturn().getResponse().getContentAsString();
+
+                assertEquals(loadResource("article/api/all_articles_details_response.json"), response);
+            }
+        }
     }
 
     @Nested

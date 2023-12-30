@@ -15,6 +15,7 @@ public class ArticlesFetchApiCriteria {
     private Boolean highlighted;
     private String sortBy;
     private Boolean ascOrder;
+    private String categoryId;
 
     public Optional<Integer> getPage() {
         return Optional.ofNullable(page);

@@ -67,7 +67,9 @@ public class ArticleController implements ArticleApi {
     }
 
     private static ArticlesFetchCriteria getFetchCriteria(ArticlesFetchApiCriteria fetchCriteria, Principal principal) {
-        ArticlesFetchCriteria criteria = ArticlesFetchCriteria.builder().highlighted(fetchCriteria.getHighlighted()).build();
+        ArticlesFetchCriteria criteria = ArticlesFetchCriteria.builder().highlighted(fetchCriteria.getHighlighted())
+                .categoryId(fetchCriteria.getCategoryId()).build();
+
         if (fetchCriteria.getPage().isPresent()) {
             PaginationCriteria paginationCriteria = PaginationCriteria.builder().startingPageIndex(fetchCriteria.getPage().get()).maximumPageSize(fetchCriteria.getSize().orElse(10)).build();
             criteria.setPaginationCriteria(paginationCriteria);
@@ -77,6 +79,7 @@ public class ArticleController implements ArticleApi {
             SortingCriteria sortingCriteria = SortingCriteria.builder().field(fetchCriteria.getSortBy().get()).ascendingOrder(fetchCriteria.getAscOrder().orElse(true)).build();
             criteria.setSortingCriteria(sortingCriteria);
         }
+
 
         if (!isAdmin(principal)) {
             // TODO add test
