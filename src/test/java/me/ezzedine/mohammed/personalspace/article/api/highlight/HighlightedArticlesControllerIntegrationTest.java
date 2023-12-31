@@ -58,21 +58,21 @@ class HighlightedArticlesControllerIntegrationTest {
         @WithAnonymousUser
         @DisplayName("un authenticated users cannot add articles to the highlight")
         void un_authenticated_users_cannot_add_articles_to_the_highlight() {
-            assertThrows(Exception.class, () -> mockMvc.perform(post("/articles/highlight/{id}", ARTICLE_ID)));
+            assertThrows(Exception.class, () -> mockMvc.perform(post("/api/articles/highlight/{id}", ARTICLE_ID)));
         }
 
         @Test
         @WithMockUser
         @DisplayName("authenticated users that are not admins cannot add articles to the highlight")
         void authenticated_users_that_are_not_admins_cannot_add_articles_to_the_highlight() {
-            assertThrows(Exception.class, () -> mockMvc.perform(post("/articles/highlight/{id}", ARTICLE_ID)));
+            assertThrows(Exception.class, () -> mockMvc.perform(post("/api/articles/highlight/{id}", ARTICLE_ID)));
         }
 
         @Test
         @WithMockUser(authorities = "admin")
         @DisplayName("admins can add articles to the highlight")
         void admins_can_add_articles_to_the_highlight() {
-            assertDoesNotThrow(() -> mockMvc.perform(post("/articles/highlight/{id}", ARTICLE_ID)));
+            assertDoesNotThrow(() -> mockMvc.perform(post("/api/articles/highlight/{id}", ARTICLE_ID)));
         }
 
         @Test
@@ -81,7 +81,7 @@ class HighlightedArticlesControllerIntegrationTest {
         void should_return_a_not_found_status_when_the_article_does_not_exist() throws Exception {
             doThrow(ArticleNotFoundException.class).when(updater).addArticleToHighlights(ARTICLE_ID);
 
-            mockMvc.perform(post("/articles/highlight/{id}", ARTICLE_ID))
+            mockMvc.perform(post("/api/articles/highlight/{id}", ARTICLE_ID))
                     .andExpect(status().isNotFound());
         }
 
@@ -91,7 +91,7 @@ class HighlightedArticlesControllerIntegrationTest {
         void should_return_a_bad_request_status_when_the_article_was_already_highlighted() throws Exception {
             doThrow(ArticleAlreadyHighlightedException.class).when(updater).addArticleToHighlights(ARTICLE_ID);
 
-            mockMvc.perform(post("/articles/highlight/{id}", ARTICLE_ID))
+            mockMvc.perform(post("/api/articles/highlight/{id}", ARTICLE_ID))
                     .andExpect(status().isBadRequest());
         }
 
@@ -99,7 +99,7 @@ class HighlightedArticlesControllerIntegrationTest {
         @WithMockUser(authorities = "admin")
         @DisplayName("should return a success status on the happy path")
         void should_return_a_success_status_on_the_happy_path() throws Exception {
-            mockMvc.perform(post("/articles/highlight/{id}", ARTICLE_ID))
+            mockMvc.perform(post("/api/articles/highlight/{id}", ARTICLE_ID))
                     .andExpect(status().is2xxSuccessful());
             verify(updater).addArticleToHighlights(ARTICLE_ID);
         }
@@ -113,21 +113,21 @@ class HighlightedArticlesControllerIntegrationTest {
         @WithAnonymousUser
         @DisplayName("un authenticated users cannot remove articles from the highlight")
         void un_authenticated_users_cannot_remove_articles_from_the_highlight() {
-            assertThrows(Exception.class, () -> mockMvc.perform(delete("/articles/highlight/{id}", ARTICLE_ID)));
+            assertThrows(Exception.class, () -> mockMvc.perform(delete("/api/articles/highlight/{id}", ARTICLE_ID)));
         }
 
         @Test
         @WithMockUser
         @DisplayName("authenticated users that are not admins cannot remove articles from the highlight")
         void authenticated_users_that_are_not_admins_cannot_remove_articles_from_the_highlight() {
-            assertThrows(Exception.class, () -> mockMvc.perform(delete("/articles/highlight/{id}", ARTICLE_ID)));
+            assertThrows(Exception.class, () -> mockMvc.perform(delete("/api/articles/highlight/{id}", ARTICLE_ID)));
         }
 
         @Test
         @WithMockUser(authorities = "admin")
         @DisplayName("admins can remove articles from the highlight")
         void admins_can_remove_articles_from_the_highlight() {
-            assertDoesNotThrow(() -> mockMvc.perform(delete("/articles/highlight/{id}", ARTICLE_ID)));
+            assertDoesNotThrow(() -> mockMvc.perform(delete("/api/articles/highlight/{id}", ARTICLE_ID)));
         }
 
         @Test
@@ -136,7 +136,7 @@ class HighlightedArticlesControllerIntegrationTest {
         void should_return_a_not_found_status_when_the_article_does_not_exist() throws Exception {
             doThrow(ArticleNotFoundException.class).when(updater).removeArticleFromHighlights(ARTICLE_ID);
 
-            mockMvc.perform(delete("/articles/highlight/{id}", ARTICLE_ID))
+            mockMvc.perform(delete("/api/articles/highlight/{id}", ARTICLE_ID))
                     .andExpect(status().isNotFound());
         }
 
@@ -146,7 +146,7 @@ class HighlightedArticlesControllerIntegrationTest {
         void should_return_a_bad_request_status_when_the_article_was_not_highlighted() throws Exception {
             doThrow(ArticleWasNotHighlightedException.class).when(updater).removeArticleFromHighlights(ARTICLE_ID);
 
-            mockMvc.perform(delete("/articles/highlight/{id}", ARTICLE_ID))
+            mockMvc.perform(delete("/api/articles/highlight/{id}", ARTICLE_ID))
                     .andExpect(status().isBadRequest());
         }
 
@@ -154,7 +154,7 @@ class HighlightedArticlesControllerIntegrationTest {
         @WithMockUser(authorities = "admin")
         @DisplayName("should return a success status on the happy path")
         void should_return_a_success_status_on_the_happy_path() throws Exception {
-            mockMvc.perform(delete("/articles/highlight/{id}", ARTICLE_ID))
+            mockMvc.perform(delete("/api/articles/highlight/{id}", ARTICLE_ID))
                     .andExpect(status().is2xxSuccessful());
             verify(updater).removeArticleFromHighlights(ARTICLE_ID);
         }
@@ -167,8 +167,8 @@ class HighlightedArticlesControllerIntegrationTest {
         @Test
         @WithAnonymousUser
         @DisplayName("un authenticated users cannot update articles highlights")
-        void un_authenticated_users_cannot_update_articles_highligts() {
-            assertThrows(Exception.class, () ->   mockMvc.perform(put("/articles/highlight")
+        void un_authenticated_users_cannot_update_articles_highlights() {
+            assertThrows(Exception.class, () ->   mockMvc.perform(put("/api/articles/highlight")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(loadResource("article/api/update_highlights_request.json"))));
         }
@@ -177,7 +177,7 @@ class HighlightedArticlesControllerIntegrationTest {
         @WithMockUser
         @DisplayName("authenticated users that are not admins cannot update articles highlights")
         void authenticated_users_that_are_not_admins_cannot_update_articles_highlights() {
-            assertThrows(Exception.class, () ->   mockMvc.perform(put("/articles/highlight")
+            assertThrows(Exception.class, () ->   mockMvc.perform(put("/api/articles/highlight")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(loadResource("article/api/update_highlights_request.json"))));
         }
@@ -186,7 +186,7 @@ class HighlightedArticlesControllerIntegrationTest {
         @WithMockUser(authorities = "admin")
         @DisplayName("admins can update articles highlights")
         void admins_can_update_articles_highlights() {
-            assertDoesNotThrow(() ->   mockMvc.perform(put("/articles/highlight")
+            assertDoesNotThrow(() ->   mockMvc.perform(put("/api/articles/highlight")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(loadResource("article/api/update_highlights_request.json"))));
         }
@@ -195,7 +195,7 @@ class HighlightedArticlesControllerIntegrationTest {
         @WithMockUser(authorities = "admin")
         @DisplayName("should return a success status on the happy path")
         void should_return_a_success_status_on_the_happy_path() throws Exception {
-            mockMvc.perform(put("/articles/highlight")
+            mockMvc.perform(put("/api/articles/highlight")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(loadResource("article/api/update_highlights_request.json")))
                     .andExpect(status().is2xxSuccessful());
@@ -211,7 +211,7 @@ class HighlightedArticlesControllerIntegrationTest {
         @DisplayName("should return the list of articles on the happy path")
         void should_return_the_list_of_articles_on_the_happy_path() throws Exception {
             when(fetcher.getHighlightedArticles()).thenReturn(List.of(getArticle()));
-            String content = mockMvc.perform(get("/articles/highlight"))
+            String content = mockMvc.perform(get("/api/articles/highlight"))
                     .andExpect(status().is2xxSuccessful())
                     .andReturn().getResponse().getContentAsString();
 
@@ -227,21 +227,21 @@ class HighlightedArticlesControllerIntegrationTest {
         @WithAnonymousUser
         @DisplayName("un authenticated users cannot fetch articles highlights summary")
         void un_authenticated_users_cannot_fetch_articles_highlights_summary() {
-            assertThrows(Exception.class, () -> mockMvc.perform(get("/articles/highlight/summary")));
+            assertThrows(Exception.class, () -> mockMvc.perform(get("/api/articles/highlight/summary")));
         }
 
         @Test
         @WithMockUser
         @DisplayName("authenticated users that are not admins cannot fetch articles highlights summary")
         void authenticated_users_that_are_not_admins_cannot_fetch_articles_highlights_summary() {
-            assertThrows(Exception.class, () -> mockMvc.perform(get("/articles/highlight/summary")));
+            assertThrows(Exception.class, () -> mockMvc.perform(get("/api/articles/highlight/summary")));
         }
 
         @Test
         @WithMockUser(authorities = "admin")
         @DisplayName("admins can fetch articles highlights summary")
         void admins_can_fetch_articles_highlights_summary() {
-            assertDoesNotThrow(() -> mockMvc.perform(get("/articles/highlight/summary")));
+            assertDoesNotThrow(() -> mockMvc.perform(get("/api/articles/highlight/summary")));
         }
 
         @Test
@@ -249,7 +249,7 @@ class HighlightedArticlesControllerIntegrationTest {
         @DisplayName("should return the list of articles summary on the happy path")
         void should_return_the_list_of_articles_on_the_happy_path() throws Exception {
             when(fetcher.getHighlightedArticlesSummary()).thenReturn(List.of(HighlightedArticle.builder().articleId(ARTICLE_ID).highlightRank(1).build()));
-            String content = mockMvc.perform(get("/articles/highlight/summary"))
+            String content = mockMvc.perform(get("/api/articles/highlight/summary"))
                     .andExpect(status().is2xxSuccessful())
                     .andReturn().getResponse().getContentAsString();
 

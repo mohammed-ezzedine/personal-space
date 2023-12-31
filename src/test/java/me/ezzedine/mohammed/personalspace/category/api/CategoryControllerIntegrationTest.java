@@ -72,13 +72,13 @@ class CategoryControllerIntegrationTest {
         @Test
         @DisplayName("it should return a success status")
         void it_should_return_a_success_status() throws Exception {
-            mockMvc.perform(get("/categories")).andExpect(status().is2xxSuccessful());
+            mockMvc.perform(get("/api/categories")).andExpect(status().is2xxSuccessful());
         }
 
         @Test
         @DisplayName("it should return the data with the correct format")
         void it_should_return_the_data_with_the_correct_format() throws Exception {
-            String response = mockMvc.perform(get("/categories")).andReturn().getResponse().getContentAsString();
+            String response = mockMvc.perform(get("/api/categories")).andReturn().getResponse().getContentAsString();
             String resource = loadResource("category/api/category_summary_list.json");
             assertEquals(resource, response);
         }
@@ -91,7 +91,7 @@ class CategoryControllerIntegrationTest {
         @DisplayName("the user should get the category details on the happy path")
         void the_user_should_get_the_category_details_on_the_happy_path() throws Exception {
             when(fetcher.fetch("categoryId")).thenReturn(Category.builder().id("categoryId").name("categoryName").order(3).build());
-            String response = mockMvc.perform(get("/categories/categoryId"))
+            String response = mockMvc.perform(get("/api/categories/categoryId"))
                     .andExpect(status().is2xxSuccessful())
                     .andReturn().getResponse().getContentAsString();
             String resource = loadResource("category/api/category_details_response.json");
@@ -102,7 +102,7 @@ class CategoryControllerIntegrationTest {
         @DisplayName("the user should get a not found status code when the category does not exist")
         void the_user_should_get_a_not_found_status_code_when_the_category_does_not_exist() throws Exception {
             when(fetcher.fetch(anyString())).thenThrow(CategoryNotFoundException.class);
-            mockMvc.perform(get("/categories/categoryId"))
+            mockMvc.perform(get("/api/categories/categoryId"))
                     .andExpect(status().isNotFound());
         }
     }
@@ -121,7 +121,7 @@ class CategoryControllerIntegrationTest {
         @DisplayName("un authenticated users cannot create categories")
         void un_authenticated_users_cannot_create_categories() {
             assertThrows(Exception.class, () -> mockMvc.perform(
-                    post("/categories")
+                    post("/api/categories")
                             .content(loadResource("category/api/create_category_request.json"))
                             .contentType(MediaType.APPLICATION_JSON)
             ));
@@ -132,7 +132,7 @@ class CategoryControllerIntegrationTest {
         @DisplayName("authenticated users that are not admins cannot create categories")
         void authenticated_users_that_are_not_admins_cannot_create_categories() {
             assertThrows(Exception.class, () -> mockMvc.perform(
-                    post("/categories")
+                    post("/api/categories")
                             .content(loadResource("category/api/create_category_request.json"))
                             .contentType(MediaType.APPLICATION_JSON)
             ));
@@ -143,7 +143,7 @@ class CategoryControllerIntegrationTest {
         @DisplayName("only admins can create categories")
         void only_admins_can_create_categories() {
             assertDoesNotThrow(() -> mockMvc.perform(
-                    post("/categories")
+                    post("/api/categories")
                             .content(loadResource("category/api/create_category_request.json"))
                             .contentType(MediaType.APPLICATION_JSON)
             ));
@@ -153,7 +153,7 @@ class CategoryControllerIntegrationTest {
         @WithMockUser(authorities = "admin")
         @DisplayName("it should return a created status code on success")
         void it_should_return_a_created_status_code_on_success() throws Exception {
-            mockMvc.perform(post("/categories")
+            mockMvc.perform(post("/api/categories")
                             .content(loadResource("category/api/create_category_request.json"))
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isCreated());
@@ -164,7 +164,7 @@ class CategoryControllerIntegrationTest {
         @DisplayName("it should return the created category id and order in the response")
         void it_should_return_the_created_category_id_and_order_in_the_response() throws Exception {
             String response = mockMvc
-                    .perform(post("/categories")
+                    .perform(post("/api/categories")
                             .content(loadResource("category/api/create_category_request.json"))
                             .contentType(MediaType.APPLICATION_JSON))
                     .andReturn().getResponse().getContentAsString();
@@ -179,7 +179,7 @@ class CategoryControllerIntegrationTest {
         void should_return_a_bad_request_with_the_reasons_of_failure_when_the_name_is_not_valid() throws Exception {
             when(persister.persist(any())).thenThrow(new CategoryValidationViolationException(List.of("firstReason", "secondReason")));
 
-            String response = mockMvc.perform(post("/categories")
+            String response = mockMvc.perform(post("/api/categories")
                             .content(loadResource("category/api/create_category_request.json"))
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest())
@@ -195,7 +195,7 @@ class CategoryControllerIntegrationTest {
         void should_return_a_conflict_status_code_when_another_category_with_a_similar_id_already_exists() throws Exception {
             when(persister.persist(any())).thenThrow(new CategoryIdAlreadyExistsException("categoryName"));
 
-            String response = mockMvc.perform(post("/categories")
+            String response = mockMvc.perform(post("/api/categories")
                             .content(loadResource("category/api/create_category_request.json"))
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isConflict())
@@ -215,7 +215,7 @@ class CategoryControllerIntegrationTest {
         @DisplayName("un authenticated users cannot update categories order")
         void un_authenticated_users_cannot_update_categories_order() {
             assertThrows(Exception.class, () -> mockMvc.perform(
-                    put("/categories/orders")
+                    put("/api/categories/orders")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(loadResource("category/api/update_orders_request.json"))
             ));
@@ -226,7 +226,7 @@ class CategoryControllerIntegrationTest {
         @DisplayName("authenticated users that are not admins cannot update categories order")
         void authenticated_users_that_are_not_admins_cannot_update_categories_order() {
             assertThrows(Exception.class, () -> mockMvc.perform(
-                    put("/categories/orders")
+                    put("/api/categories/orders")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(loadResource("category/api/update_orders_request.json"))
             ));
@@ -237,7 +237,7 @@ class CategoryControllerIntegrationTest {
         @DisplayName("only admins can update categories order")
         void only_admins_can_update_categories_order() {
             assertDoesNotThrow(() -> mockMvc.perform(
-                    put("/categories/orders")
+                    put("/api/categories/orders")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(loadResource("category/api/update_orders_request.json")
             )));
@@ -248,7 +248,7 @@ class CategoryControllerIntegrationTest {
         @DisplayName("should return a success status upon successfully updating the orders")
         void should_return_a_success_status_upon_successfully_updating_the_orders() throws Exception {
             mockMvc.perform(
-                    put("/categories/orders")
+                    put("/api/categories/orders")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(loadResource("category/api/update_orders_request.json"))
             ).andExpect(status().is2xxSuccessful());
@@ -267,21 +267,21 @@ class CategoryControllerIntegrationTest {
         @WithAnonymousUser
         @DisplayName("un authenticated users cannot delete categories")
         void un_authenticated_users_cannot_delete_categories() {
-            assertThrows(Exception.class, () -> mockMvc.perform(delete("/categories/categoryId")));
+            assertThrows(Exception.class, () -> mockMvc.perform(delete("/api/categories/categoryId")));
         }
 
         @Test
         @WithMockUser
         @DisplayName("authenticated users that are not admins cannot delete categories")
         void authenticated_users_that_are_not_admins_cannot_delete_categories() {
-            assertThrows(Exception.class, () -> mockMvc.perform(delete("/categories/categoryId")));
+            assertThrows(Exception.class, () -> mockMvc.perform(delete("/api/categories/categoryId")));
         }
 
         @Test
         @WithMockUser(authorities = "admin")
         @DisplayName("only admins can delete categories")
         void only_admins_can_delete_categories() {
-            assertDoesNotThrow(() -> mockMvc.perform(delete("/categories/categoryId")));
+            assertDoesNotThrow(() -> mockMvc.perform(delete("/api/categories/categoryId")));
         }
 
         @Test
@@ -289,7 +289,7 @@ class CategoryControllerIntegrationTest {
         @DisplayName("should return a not found exception if the category does not exist")
         void should_return_a_not_found_exception_if_the_category_does_not_exist() throws Exception {
             doThrow(CategoryNotFoundException.class).when(deleter).delete("categoryId");
-            mockMvc.perform(delete("/categories/categoryId"))
+            mockMvc.perform(delete("/api/categories/categoryId"))
                     .andExpect(status().isNotFound());
         }
 
@@ -299,7 +299,7 @@ class CategoryControllerIntegrationTest {
         void should_return_a_bad_request_when_the_category_cannot_be_deleted() throws Exception {
             String rejectionReason = UUID.randomUUID().toString();
             doThrow(new CategoryDeletionRejectedException(rejectionReason)).when(deleter).delete("categoryId");
-            String response = mockMvc.perform(delete("/categories/categoryId"))
+            String response = mockMvc.perform(delete("/api/categories/categoryId"))
                     .andExpect(status().isBadRequest())
                     .andReturn().getResponse().getContentAsString();
             assertEquals(rejectionReason, response);
@@ -309,7 +309,7 @@ class CategoryControllerIntegrationTest {
         @WithMockUser(authorities = "admin")
         @DisplayName("should return a success status when the category is successfully deleted")
         void should_return_a_success_status_when_the_category_is_successfully_deleted() throws Exception {
-            mockMvc.perform(delete("/categories/categoryId"))
+            mockMvc.perform(delete("/api/categories/categoryId"))
                     .andExpect(status().is2xxSuccessful());
         }
     }

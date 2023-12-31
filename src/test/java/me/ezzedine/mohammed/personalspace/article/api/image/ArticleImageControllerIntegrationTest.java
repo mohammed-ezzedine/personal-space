@@ -62,21 +62,21 @@ class ArticleImageControllerIntegrationTest {
         @WithAnonymousUser
         @DisplayName("non authenticated users cannot upload images")
         void non_authenticated_users_cannot_upload_images() {
-            assertThrows(Exception.class, () -> mockMvc.perform(multipart("/articles/images").file(getMockImage())));
+            assertThrows(Exception.class, () -> mockMvc.perform(multipart("/api/articles/images").file(getMockImage())));
         }
 
         @Test
         @WithMockUser
         @DisplayName("authenticated users that are not admins cannot upload images")
         void authenticated_users_that_are_not_admins_cannot_upload_images() {
-            assertThrows(Exception.class, () -> mockMvc.perform(multipart("/articles/images").file(getMockImage())));
+            assertThrows(Exception.class, () -> mockMvc.perform(multipart("/api/articles/images").file(getMockImage())));
         }
 
         @Test
         @WithMockUser(authorities = "admin")
         @DisplayName("admin users can upload images")
         void admin_users_can_upload_images() {
-            assertDoesNotThrow(() -> mockMvc.perform(multipart("/articles/images").file(getMockImage())));
+            assertDoesNotThrow(() -> mockMvc.perform(multipart("/api/articles/images").file(getMockImage())));
         }
 
         @Test
@@ -86,7 +86,7 @@ class ArticleImageControllerIntegrationTest {
             MockMultipartFile mockImage = getMockImage();
 
             doThrow(ImageNameAlreadyExistsException.class).when(imageService).upload(any(), any());
-            mockMvc.perform(multipart("/articles/images").file(mockImage))
+            mockMvc.perform(multipart("/api/articles/images").file(mockImage))
                     .andExpect(status().isConflict());
         }
 
@@ -97,7 +97,7 @@ class ArticleImageControllerIntegrationTest {
             MockMultipartFile mockImage = getMockImage();
 
             doThrow(FailedToUploadImageException.class).when(imageService).upload(any(), any());
-            mockMvc.perform(multipart("/articles/images").file(mockImage))
+            mockMvc.perform(multipart("/api/articles/images").file(mockImage))
                     .andExpect(status().isInternalServerError());
         }
 
@@ -106,7 +106,7 @@ class ArticleImageControllerIntegrationTest {
         @DisplayName("the user should get the link of the uploaded image in the response")
         void the_user_should_get_the_link_of_the_uploaded_image_in_the_response() throws Exception {
             MockMultipartFile mockImage = getMockImage();
-            String contentAsString = mockMvc.perform(multipart("/articles/images").file(mockImage))
+            String contentAsString = mockMvc.perform(multipart("/api/articles/images").file(mockImage))
                     .andExpect(status().is2xxSuccessful())
                     .andReturn().getResponse().getContentAsString();
 
@@ -127,7 +127,7 @@ class ArticleImageControllerIntegrationTest {
         void should_return_a_not_found_status_when_the_image_does_not_exist() throws Exception {
             when(imageService.serveImage("imageName")).thenThrow(ImageDoesNotExistException.class);
 
-            mockMvc.perform(get("/articles/images/imageName"))
+            mockMvc.perform(get("/api/articles/images/imageName"))
                     .andExpect(status().isNotFound());
         }
 
@@ -139,7 +139,7 @@ class ArticleImageControllerIntegrationTest {
             Files.write(path, "imageContent".getBytes());
 
             when(imageService.serveImage("imageName")).thenReturn(new UrlResource(path.toUri()));
-            String contentAsString = mockMvc.perform(get("/articles/images/imageName"))
+            String contentAsString = mockMvc.perform(get("/api/articles/images/imageName"))
                     .andExpect(status().is2xxSuccessful())
                     .andReturn().getResponse().getContentAsString();
             assertEquals("imageContent", contentAsString);

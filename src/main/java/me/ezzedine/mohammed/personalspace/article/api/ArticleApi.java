@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
-@RequestMapping("articles")
+@RequestMapping("api/articles")
 public interface ArticleApi {
 
     @GetMapping

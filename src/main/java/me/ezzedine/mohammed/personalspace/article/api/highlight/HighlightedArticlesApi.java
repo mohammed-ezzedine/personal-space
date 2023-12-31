@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("articles/highlight")
+@RequestMapping("api/articles/highlight")
 public interface HighlightedArticlesApi {
 
     @PostMapping("{id}")
