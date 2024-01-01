@@ -25,4 +25,11 @@ public class ArticleApiTestUtil {
                 .version(1L).createdDate(LocalDateTime.parse(CREATED_DATE)).lastModifiedDate(LocalDateTime.parse(LAST_MODIFIED_DATE))
                 .hidden(HIDDEN).estimatedReadingTime(ESTIMATED_READING_TIME).build();
     }
+
+    public static Article getVisibleArticle() {
+        return Article.builder().id(ARTICLE_ID).title(TITLE).description(DESCRIPTION).content(CONTENT)
+                .categoryId(CATEGORY_ID).thumbnailImageUrl(ARTICLE_THUMBNAIL_IMAGE_URL).keywords(List.of(KEYWORD))
+                .version(1L).createdDate(LocalDateTime.parse(CREATED_DATE)).lastModifiedDate(LocalDateTime.parse(LAST_MODIFIED_DATE))
+                .hidden(false).estimatedReadingTime(ESTIMATED_READING_TIME).build();
+    }
 }

@@ -40,9 +40,14 @@ public class ArticleController implements ArticleApi {
     }
 
     @Override
-    public ResponseEntity<ArticleApiModel> getArticle(String id) throws ArticleNotFoundException {
+    public ResponseEntity<ArticleApiModel> getArticle(String id, Principal principal) throws ArticleNotFoundException {
         log.info("Received a request to fetch the details of article with id={}", id);
         Article article = articleFetcher.fetch(id);
+
+        if (article.isHidden() && !isAdmin(principal)) {
+            throw new ArticleNotFoundException(id);
+        }
+
         return ResponseEntity.ok(toApiModel(article));
     }
 

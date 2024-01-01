@@ -16,7 +16,7 @@ public interface ArticleApi {
     ResponseEntity<Page<ArticleSummaryApiModel>> getArticles(ArticlesFetchApiCriteria fetchCriteria, Principal principal);
 
     @GetMapping("{id}")
-    ResponseEntity<ArticleApiModel> getArticle(@PathVariable String id) throws ArticleNotFoundException;
+    ResponseEntity<ArticleApiModel> getArticle(@PathVariable String id, Principal principal) throws ArticleNotFoundException;
 
     @PostMapping
     @AdminAccess

@@ -6,7 +6,7 @@
   "thumbnailImageUrl": "articleThumbnailImageUrl",
   "createdDate": "2023-12-24T12:33:42.411",
   "lastModifiedDate": "2023-12-24T12:34:51.182",
-  "hidden": false,
+  "hidden": true,
   "keywords": ["keyword"],
   "estimatedReadingTime": "estimatedReadingTime",
   "content": "articleContent"

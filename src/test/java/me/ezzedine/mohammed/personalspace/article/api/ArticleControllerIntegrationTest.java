@@ -184,7 +184,7 @@ class ArticleControllerIntegrationTest {
         @Test
         @DisplayName("should return a success status code with the details when the article exists")
         void should_return_a_success_status_code_with_the_details_when_the_article_exists() throws Exception {
-            when(articleFetcher.fetch(ARTICLE_ID)).thenReturn(getArticle());
+            when(articleFetcher.fetch(ARTICLE_ID)).thenReturn(getVisibleArticle());
 
             String response = mockMvc.perform(get("/api/articles/{articleId}", ARTICLE_ID))
                     .andExpect(status().is2xxSuccessful())
