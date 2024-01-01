@@ -48,3 +48,15 @@ jobs:
       - name: Publish Images
         if: github.event_name == 'push'
         run: docker push maezzedine/personal-space --all-tags
+
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        if: github.event_name == 'push'
+        with:
+          host: ${{ secrets.DEPLOYMENT_HOST }}
+          username: ${{ secrets.DEPLOYMENT_USERNAME }}
+          key: ${{ secrets.DEPLOYMENT_PRIVATE_KEY }}
+          script:  |
+            cd devops
+            ./docker-redeploy.sh
+            echo 'Deployment finished'
